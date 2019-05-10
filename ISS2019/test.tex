@@ -1,0 +1,314 @@
+%#!pdflatex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Instructions for preparing a manuscript for the International 
+% Symposium on Scheduling 2019
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[fleqn]{ssjiss}
+%\usepackage[pdftex]{graphicx} 
+\usepackage[dvipdfmx]{graphicx} 
+\usepackage{amsmath,amssymb}
+\usepackage{latexsym,amssymb}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{here}
+\setlength{\mathindent}{0pt}
+%% \usepackage[bxutf8]{inputenc}  % bxutf8 ‚Æ
+%% \usepackage{bxucs}   
+\usepackage[T2A,T1]{fontenc}
+%% Times-style font
+\usepackage{newtxtext,newtxmath}%%using newtx as default
+% \usepackage{txfonts}%%use txfonts if you do not have newtx.
+%% Harvard style referencing
+\usepackage{natbib}\setcitestyle{aysep={,}}%%using natbib as default
+%\usepackage{harvard}\citationstyle{dcu}\citationmode{abbr}%%use harvard if you do not have natbib.
+\bibliographystyle{dcu}
+\begin{document}
+
+%% \section{Mathematical formulation}\label{section3}
+%% In this section, we formulate the optimization model to find the optimal location of  emergency vehicles.
+%% \subsection{Notation}
+%% We use the following notations to describe our proposed model.
+%% \begin{itemize}
+%% \item Indices and Sets
+%%   \begin{itemize}
+%%   \item $s \in S$ : \ the set of scenarios,
+%%   \item $d \in D$ : \ the set of fire departments, 
+%%   \item $p_{s} \in P_{s}$ : \ the set of emergency sites under $s$, 
+%%   \item $v \in V$ : \ the set of emergency vehicles, 
+%%   \item $n \in N$ : \ the set of the numbers of dispatching. 
+%%   \end{itemize}
+%%   \item Parameters
+%%   \begin{itemize}
+%%   \item $t^\text{call}_{s,p_{s}}$ : \ the call-in time from $p_{s}$ under $s$,
+%%   \item $t^\text{travel}_{s,d,p_{s}}$ : \ the traveling time between $d$ and $p_{s}$ under $s$,
+%%   \item $t^\text{service}_{s,p_{s}}$ : \ the service time of $v$ at $p_{s}$ under $s$,
+%%   \item $t^\text{setup}$ : \ the setup time for dispatching,
+%%   \item $t^\text{thres}$ : \ the threshold amount,
+%%   \item $M_{1}/M_{2}$ : \ sufficiently large constant numbers,
+%%   \item $\mathbb{P}_{s}$ : \ the occurrence probability of $s$.
+%%   \end{itemize}
+%% \item Decision variables
+%%   \begin{itemize}
+
+%% \item
+%%    \begin{eqnarray}
+%%     x_{s,p_{s},n,v}=\left \{
+%%     \begin{array}{ll}
+%%       1, &\hspace{0.1cm} \mbox{ $v$ is dispatched to $p_{s}$ with the $n$-th}\\
+%%       &\mbox{dispatch under $s$,}\\
+%%       %&\mbox{ }\\
+%%       0, &\hspace{0.1cm} \mbox{otherwise,}\nonumber
+%%     \end{array}
+%%     \right.
+%%    \end{eqnarray}
+%%     %% $x_{a,j,n,k}$ : \ Binary decision variable that takes the value 1 if emergency vehicle $k$ is dispatched to demand point $j$ in the number of dispatch $n$ under scenario $a$,and 0 otherwise.
+
+%%   \item %% $y_{i,k}$ : \ Binary decision variable that takes the value 1 if emergency vehicle $k$ is assigned to emergency satation $i$, and 0 otherwise.
+%%     \begin{eqnarray}
+%%     y_{d,v}=\left \{
+%%     \begin{array}{ll}
+%%       1, &\hspace{0.1cm} \mbox{$v$ is assigned to $d$,}\\
+%%       %&\mbox{,}\\
+%%       0,&\hspace{0.1cm} \mbox{otherwise,}\nonumber
+%%     \end{array}
+%%     \right.
+%%     \end{eqnarray}
+
+%%   \item $z^\text{dispatch}_{s,n,v}$ : \ the dispatch time of $v$ with the $n$-th dispatch under $s$,
+%%   \item $z^\text{travel}_{s,n,v}$ : \ the traveling time of $v$ with the $n$-th dispatch under $s$,
+%%   \item $z^\text{arrival}_{s,n,v}$ : \ the arrival time of $v$ with the $n$-th dispatch under $s$,
+%%   \item $z^\text{end}_{s,n,v}$ : \ the end-of-service time of $v$ with the $n$-th dispatch under $s$, 
+%%   \item $z^\text{return}_{s,n,v}$ : \ the return time of $v$ with the $n$-th dispatch under $s$,
+%%   \item $z^\text{response}_{s,j_{a},n,v}$ : \ the response time of $v$ for $j_{s}$ with the $n$-th dispatch under $s$.
+%%   %% \item $m_{a,j,n,k}$ : \ the penalty time of the response time of an emergency vehicle $k$ for a site $j$ with the $n$-th dispatch under a scenario $a$ exceeds 30 minutes.
+%%     %$\max\{0,v_{a,n,k}-u_{a,j}\}$. Ô—¼ ${k \in K}$ ‚ª $n$ ‰ñ–Ú‚Ìo“®‚ÅŒ»ê $j$ ‚Ö“’…‚·‚é‚Æ’Ê•ñ‚Ì·
+%%   %\item $q_{a,j,n,k}$ := \ $\max\{0,w_{a,n-1,k}-u_{a,j}\}$%% Ô—¼ ${k \in K}$  ‚Ì $(n-1)$ ‰ñ–Ú‚ÌÁ–h‚Ö‹A’…‚Æ$n$‰ñ–Ú‚ÌŒ»ê’Ê•ñ·
+%%   \end{itemize}
+%% \end{itemize}
+%% \subsection{Constraints}
+%% In this research, we built the following constraints.
+
+%%  \begin{description}
+%%       \setlength{\parskip}{-0.7mm}
+%%       \setlength{\itemsep}{-0.7mm}
+%% \item[\small  Affiliation and dispatching rule of vehicles]
+%% \item
+%%   \begin{eqnarray}
+%%     \sum_{d \in D}y_{d,v}=1
+%%     \quad (v \in V) ,           
+%%     \label{eq:Position}
+%%   \end{eqnarray}
+     
+%% \item 
+%%   \begin{eqnarray}
+%%     \sum_{n \in N, v \in V}x_{s,p_{s},n,v}=1
+%%     \quad ( s \in  S,p_{s} \in P_{s}) ,
+%%     \label{eq:VehicleDemand}
+%%   \end{eqnarray}
+%% \item 
+%%   \begin{eqnarray}
+%%     \sum_{p_{s} \in P_{s}}x_{s,p_{s},n,v}\leq 1
+%%     \quad (s \in  S,n \in N, v \in V) .
+%%     \label{eq:LimitVenue}
+%%   \end{eqnarray}
+
+
+  
+%%  \end{description}
+%%   The constraint (\ref{eq:Position}) ensures that the emergency vehicles are assigned to one fire department. The constraint (\ref{eq:VehicleDemand}) ensures that an emergency vehicle must be dispatched to an emergency site. The constraint (\ref{eq:LimitVenue}) ensures that each emergency vehicle can only be dispatched to at most one emergency site in each dispatching.
+%%  \begin{description}
+%%          \setlength{\parskip}{-0.5mm}
+%%          \setlength{\itemsep}{-0.5mm}
+%% \item[\small Dispatching emergency vehicles]
+%% \item  
+%%   \begin{eqnarray}
+%%     z^\text{dispatch}_{s,n,v} \geq  \sum_{p_{s} \in P_{s}}x_{s,p_{s},n,v}t^\text{call}_{s,p_{s}}+t^\text{setup} 
+%%     \nonumber
+%%     \\\quad (s \in  S, n \in N, v \in V) , 
+%%     \label{eq:PrepareTime}
+%%   \end{eqnarray}
+  
+%% \item  
+%%   \begin{eqnarray}
+%%     z^\text{travel}_{s,n,v} \geq t^\text{travel}_{s,d,p_{s}}-(1-y_{d,v})M_{1}-(1-x_{s,p_{s},n,v})M_{1}\nonumber
+%%      \\\quad (s \in  S, d \in D, p_{s} \in P_{s}, n \in N, v \in V) , \label{eq:NeedTime} 
+%%   \end{eqnarray}
+%% \item 
+%%   \begin{eqnarray}
+%%     z^\text{arrival}_{s,n,v} \geq z^\text{dispatch}_{s,n,v}+z^\text{travel}_{s,n,v}
+%%     \quad (s \in  S, n \in N, v \in V) ,
+%% \label{eq:GoTime}
+%%   \end{eqnarray}
+
+%% \item  
+%%   \begin{eqnarray}
+%%     z^\text{end}_{s,n,v} = z^\text{arrival}_{s,n,v}+ \sum_{s \in  S,p_{s} \in P_{s}}x_{s,p_{s},n,v}t^\text{service}_{s,p_{s}}\nonumber
+%%     \\\quad (s \in S, n \in N, v \in V) ,
+%% \label{eq:ArriveTime}
+%%   \end{eqnarray}
+%% \item 
+ 
+%%   \begin{eqnarray}
+%%     z^\text{return}_{s,n,v} = z^\text{end}_{s,n,v}+z^\text{travel}_{s,n,v}
+%%     \quad (s \in S, n \in N, v \in V) ,
+%%     \label{eq:BackTime}
+%%   \end{eqnarray}
+
+%% \item 
+
+%%   \begin{eqnarray}
+%%     z^\text{return}_{s,n-1,v}+t^\text{setup} \leq z^\text{dispatch}_{s,n,v}
+%%     \quad (s \in  S, n \in N, v \in V :n \geq 2) .
+%%     \label{eq:BackTimeAndGoTime}
+%%   \end{eqnarray}
+%%  \end{description}
+%%   The constraint (\ref{eq:PrepareTime}) ensures that the setup time is necessary for dispatching. %% if an emergency vehicle $k$ is dispatched to cite $j$ with the $n$-th dispatch under scenario $a$ ($x_{a,j,n,k}=1$) and this emergency vehicle $k$ is assigned to an fire department $i$ ($y_{i,k}=1$),
+%% %% Constraints (\ref{eq:relation1}), (\ref{eq:relation2}), (\ref{eq:relation3}) show the relationship between the binary variable $m_{a,i,j,n,k}$ and $x_{j,n,k}$, $y_{i,k}$.
+%%  The constraint (\ref{eq:NeedTime}) becomes $z^\text{travel}_{s,n,v} \geq t^\text{travel}_{s,d,p_{s}}$ when $x_{s,p_{s},n,v}=1$ and $y_{d,v}=1$ holds, the $z^\text{travel}_{s,n,v}$
+%%  shows the upper bound of traveling time between the fire department and the emergency site. The constraints (\ref{eq:GoTime}) and (\ref{eq:ArriveTime}) determine the arrival time and the end-of-service time of an emergency vehicle at a emergency site, respectively. 
+%%  The constraint (\ref{eq:BackTime}) shows the return time of an emergency vehicle. The constraint (\ref{eq:BackTimeAndGoTime}) shows the relationship between the return time and the next dispatching time of an emergency vehicle.
+  
+%%  \begin{description}
+%%    \setlength{\parskip}{-0.5mm}
+%%    \setlength{\itemsep}{-0.5mm}
+%% \item[\small Priority and posteriority of time variables]
+%% \item  
+%%     \begin{eqnarray}
+%%       z^\text{arrival}_{s,n,v} \geq z^\text{dispatch}_{s,n,v}
+%%       \quad  (s \in  S, n \in N, v \in V) ,
+%%       \label{eq:ArriveGoTime}
+%%     \end{eqnarray}
+
+%% \item 
+%%   \begin{eqnarray}
+%%     z^\text{end}_{s,n,v} \geq z^\text{arrival}_{s,n,v}
+%%     \quad  (s \in  S, n \in N, v \in V) ,
+%%     \label{eq:OverArriveTime}
+%%     \end{eqnarray}
+
+%% \item 
+%%     \begin{eqnarray}
+%%       z^\text{return}_{s,n,v} \geq z^\text{end}_{s,n,v}
+%%       \quad (s \in  S, n \in N, v \in V) , 
+%%       \label{eq:BackOverTime}
+%%     \end{eqnarray}
+%% \item
+%%       \begin{eqnarray}
+%%       z^\text{response}_{s,p_{s},n,v} \geq z^\text{arrival}_{s,n,v}-t^\text{call}_{s,p_{s}}-t^\text{thres}-(1-x_{s,p_{s},n,v})M_{2}
+%%       \nonumber
+%%       \\ \quad  (s \in  S, p_{s} \in P_{s}, n \in N, v \in V) .
+%%       \label{eq:Difference}
+%%       \end{eqnarray}
+
+%%     \end{description}
+%%   The constraints (\ref{eq:ArriveGoTime}), (\ref{eq:OverArriveTime}) and (\ref{eq:BackOverTime}) show the order of time variables (Fig.~\ref{fig:system}). If $t^\text{thres}$ greater than 0, the constraint (\ref{eq:Difference}) computes the penalty time of each emergency vehicle whose response time exceeds $t^\text{thres}$. If $t^\text{thres}$ equals 0, the constraint (\ref{eq:Difference}) shows the penalty time equals the response time for each emergency vehicle.
+
+%%  \begin{description}
+%%    \setlength{\parskip}{-0.5mm}
+%%    \setlength{\itemsep}{-0.5mm}
+%% \item[\small Nonnegativity of variables]
+
+%% \item  
+%%     \begin{eqnarray}
+%%       z^\text{travel}_{s,n,v} \geq 0 \quad (s \in  S, n \in N, v \in V) ,
+%%       \label{eq:Nonnegative3}
+%%     \end{eqnarray}    
+
+
+%% \item 
+%%     \begin{eqnarray}
+%%       z^\text{response}_{s,p_{s},n,v} \geq 0 \quad (s \in  S, p_{s} \in P_{s}, n \in N, v \in V) .
+%%       \label{eq:Nonnegative1}
+%%     \end{eqnarray}
+
+%%  \end{description}
+%%  The constraints (\ref{eq:Nonnegative3}),(\ref{eq:Nonnegative1}) ensure the continuous variables nonnegative.
+%%  \subsection{Objective function}
+%%  \vspace{-0mm}
+%%   \begin{description}
+%%        \setlength{\parskip}{-0mm}
+%%        \setlength{\itemsep}{-0mm}
+%% \item
+%%   \begin{equation}
+%%   f =\sum_{s \in  S}\left(\mathbb{P}_{s}\cdot\sum_{p_{s} \in P_{s}, n \in N, v \in V}z^\text{response}_{s,p_{s},n,v}\right)\label{Objective}
+%%   \nonumber
+%%   \end{equation}
+
+%%  \end{description}
+%%  \subsection{Mathematical model}
+%%  The mathematical model is  presented as follows:
+%%  \begin{eqnarray}
+%%    (
+%%    \heartsuit
+%%    )
+%%  \left|
+%%  \begin{array}{ll}
+%%    \mbox{minimize \quad}
+%%    & f \\
+%%    \mbox{subject to \quad}
+%%     & (\ref{eq:Position})\sim (\ref{eq:Nonnegative1}).
+%%    \nonumber	
+%%  \end{array}
+%%  \right.
+%%  \label{eq:prob2}
+%%  \end{eqnarray}
+
+%% $(\heartsuit)$ is used to find the optimal location of emergency vehicles by minimizing the total penalty time for each emergency vehicle. 
+%%   \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Objective value 1800sec}
+%%     \begin{tabular}{cccccccccc}\hline
+%%      & Obj.val. &Gap\\\hline
+
+%%       Case (i)-1 &323.64&91.3\%\\
+%%       Case (i)-2 &178.66&100\%\\
+%%       Case (i)-3 &264.95&89.3\%\\
+%%       Case (i)-4 &116.80&100\%\\
+%%       Case (i)-5 &268.90&89.5\%\\
+%%       Case (i)-6 &78.58&100\%\\
+
+%%       \hline
+%%     \end{tabular}
+%%     \label{obj}
+%%   \end{center}
+%% \end{table}
+
+%%   \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Objective value 3600sec}
+%%     \begin{tabular}{cccccccccc}\hline
+%%      & Obj.val. &Gap\\\hline
+
+%%       Case (i)-1 &318.07&91.1\%\\
+%%       Case (i)-2 &183.38&100\%\\
+%%       Case (i)-3 &269.20&89.5\%\\
+%%       Case (i)-4 &88.29&100\%\\
+%%       Case (i)-5 &270.40&89.5\%\\
+%%       Case (i)-6 &120.03&100\%\\
+
+%%       \hline
+%%     \end{tabular}
+%%     \label{obj}
+%%   \end{center}
+%% \end{table}
+
+ŒvZŒ‹‰Ê‚Íb’è‰ğ‚Å‚·DˆÈ‰º‚Ì‹c˜_‚Í‚»‚ê‚ğŠî‚É‚µ‚Äs‚¢‚Ü‚·D
+
+
+[‹c˜_‚Æ‚±‚ë‚ÅCˆÈ‰º‚ÌŠp“x‚©‚çŒŸ“¢‚·‚é]
+\begin{itemize}
+\item –Ú“IŠÖ”‚Ì”äŠr
+\item ”z’uŒ‹‰Êig‚í‚ê‚½Á–h”CÁ–h‚ªg‚í‚ê‚½•p“xj‚Ì”äŠr
+\item ŠeŠÔ“à‚Å“’…‚Å‚«‚éŒ”
+\end{itemize}
+
+
+[“à—e‚Ì—¬‚ê]
+\begin{itemize}
+\item case (i)-1,case (i)-3,case (i)-5‚É‚Â‚¢‚Ä‚Ì‹c˜_ 
+\item case (i)-2,case (i)-4,case (i)-6‚É‚Â‚¢‚Ä‚Ì‹c˜_
+\item case (i)-1 ‚©‚ç case (i)-6 ‚É‚Â‚¢‚Ä‚Ì‹c˜_
+\item case (ii)-1 ‚©‚ç case (ii)-3 ‚É‚Â‚¢‚Ä‚Ì‹c˜_
+\end{itemize}
+\end{document}
+

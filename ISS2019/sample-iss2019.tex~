@@ -1,0 +1,904 @@
+%#!pdflatex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Instructions for preparing a manuscript for the International 
+% Symposium on Scheduling 2019
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[fleqn]{ssjiss}
+%\usepackage[pdftex]{graphicx} 
+\usepackage[dvipdfmx]{graphicx} 
+\usepackage{amsmath,amssymb}
+\usepackage{latexsym,amssymb}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{here}
+\usepackage {threeparttable}
+\setlength{\mathindent}{0pt}
+%% \usepackage[bxutf8]{inputenc}  % bxutf8 ‚Æ
+%% \usepackage{bxucs}   
+\usepackage[T2A,T1]{fontenc}
+%% Times-style font
+\usepackage{newtxtext,newtxmath}%%using newtx as default
+% \usepackage{txfonts}%%use txfonts if you do not have newtx.
+%% Harvard style referencing
+\usepackage{natbib}\setcitestyle{aysep={,}}%%using natbib as default
+%\usepackage{harvard}\citationstyle{dcu}\citationmode{abbr}%%use harvard if you do not have natbib.
+\bibliographystyle{dcu}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Optimization model for emergency vehicle allocation \\ with integration of dispatch}
+%% \subtitle{The title of the paper, in bold capital letters, centered\\
+%% A subtitle is optional}
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% author name, institution name, etc
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{author}
+\name{You Zhao }
+\address{KU}{Environmental and Applied Systems Engineering, Kansai University, 3-3-35, Yamate-cho, Suita, Osaka, 564-8680, Japan.}  
+\email{email you}{k819381@kansai-u.ac.jp}
+\name{Hiroshige Dan}
+\addressref{KU}
+\email{email hiroshige}{dan@kansai-u.ac.jp}
+\end{author}
+
+
+
+\begin{abstract}
+  This paper aims to develop an optimization model for allocating emergency vehicles to fire departments. Our proposed model considers the integration of dispatch of emergency vehicles in a comparatively large area. We generated some random scenarios to consider uncertainty in the real world and conducted numerical experiments. However, the obtained solutions showed that usefulness of our model is very limited. Therefore, we solved other problems in which the allocation of EVs was fixed. The results showed that our model can find the optimal or good dispatch under the fixed allocation.
+\end{abstract}
+
+\begin{keywords}
+ Allocation and dispatch of emergency vehicles, integration of dispatch, optimization, uncertainty.
+\end{keywords}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% beginning of text
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+Fire and Disaster Management Organization Act defines the tasks of the fire service organization as follows \mbox{\cite{FDMA15}}:
+\begin{quote}
+  Utilizing the available facilities and human resources, fire service organizations shall protect the lives, physical being, and property of public from fire and take precautions against disasters such as storms, floods fires, and earthquakes, while mitigating the damage of these disasters. Fire service organizations are also responsible for the appropriate transport of persons who have sustained injuries due to a disaster.
+\end{quote}
+When serious accidents or disasters happen, emergency vehicles are belong to the fire departments will rush to the emergency site as soon as possible for rescue. However, in recent years, the number of emergency calls is increasing. In particular, the average traveling time of emergency vehicles to the emergency site tends to become longer because of the lack of fire departments and emergency vehicles in suburbs. If we allocate more emergency vehicles in more fire departments, we can shorten the traveling time to the emergency sites. However, at the same time the allocation cost must be considered. Therefore, the white paper of the Japan Fire and Disaster Management Agency \mbox{\cite{FDMA18}} pointed out that we must merge the responsibility areas of fire departments and integrate the operation for dispatching emergency vehicles. This is an urgent task because we have to prepare for disaster risks and the decrease of the population of Japan in the near future.
+
+In the allocation problem of emergency vehicles, the main objective is to minimize the response time, that is, the elapsed time between the receiving time of the emergency call and the arrival time of emergency vehicles at the emergency site \mbox{\cite{Saeed18}}. Because the emergency site would be covered by the emergency vehicles allocated at fire departments, therefore, the allocation of emergency vehicles is important for the level of service quality. Moreover, the unpredictability of the time and the location of emergency incidents are also the main issues in the emergency vehicle location \mbox{\cite{keisuke04}} \mbox{\cite{Lei15}} \mbox{\cite{Xiao-Xia13}}. We should consider the uncertainty for solving the emergency vehicle allocation problem:
+\begin{itemize}
+\item The uncertainty of the call-in time and the location of the emergency site
+\item The uncertainty of the traveling time of emergency vehicles
+\item The uncertainty of the service time at the emergency site
+\end{itemize}
+
+Based on the above, in this research, we develop an optimization model to find the optimal allocation of emergency vehicles with integration of dispatching of emergency vehicles. In our proposed model, we can deal with some uncertainties which are explained above.
+
+
+In Section \ref{section2}, the process of emergency response system is described in detail. Next, the mathematical optimization model will be proposed in Section \ref{section3}. After that, in order to demonstrate the performance and validate the proposed model, we generated some numerical instances are presented and solved them by the proposed model in Section \ref{section4}. Finally, we draw a conclusion in Section \ref{conclusion}.
+\section{process of emergency response system}\label{section2}
+In this section, we introduce the process of the emergency response system. The process of the emergency response system usually covers the sequence of the following activities.
+\begin{enumerate}
+\item The system receives the emergency call when the incident happens.
+\item After call screening, dispatchers evaluate the system status and determine the appropriate emergency vehicle (EV) to dispatch.
+\item The dispatched EV arrives at the emergency site and starts service.
+\item After completing service, the EV returns to the fire departments or goes to another emergency site.
+\end{enumerate}
+In this research, we assume that dispatched EVs must return back to the fire departments when the service is completed (Fig.~\ref{fig:process}). Also, we use some notations of the times and the time periods for explaining this produce as shown in Fig.~\ref{fig:system}.
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 200 410]{process.pdf}
+    \caption{The process of emergency response system}
+    \label{fig:process}
+  \end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.48,bb=0 0 1000 150]{system.pdf}
+    \caption{Times and time periods in EV dispathcing}
+    \label{fig:system}
+  \end{center}
+\end{figure}
+
+%% In addition, we will introduce the time and time periods about an EV when it is dispatched to a site as shown in Fig.~\ref{fig:system}.
+%% \begin{itemize}
+%% \item The time period between call-in time and dispatch time is called setup time.
+%% \item The time period between dispatch time and arrival time is called travel time.
+%% \item The time period between call-in time and arrival time is called response time.
+%% \item The time period between arrival time and end-of-time is called service time.
+%% \item The time period between end-of-service time and return time is called travel time.
+%% \end{itemize}
+  %%the time between emergency call is accepted and EV arrive at the demand point, we call it response time  Besides, from call-in time to return time for EVs, we call it unavailable time for EVs and that is emergency vechicle is dispatched in one dispatch
+
+%% An EV is unavaliable if one of the following conditions is fulfilled:
+%% \begin{itemize}
+%% \item The EV is on its way to serve a demand
+%% \item The EV is serving a demand
+%% \item The EV is returning to the station
+%% \end{itemize}
+%% because EV unavaliable in some time periods, we must dispatch avaliable EV when another emergency incident happend and the EV may be dispatched in board area.
+
+%\section{The probability in emergency vehicle location}\label{eq:section3}
+\section{Mathematical formulation}\label{section3}
+In this section, we formulate the optimization model to find the optimal allocation of  emergency vehicles.
+\subsection{Notation}
+We use the following notations to describe our proposed model.
+\begin{itemize}
+\item Indices and Sets
+  \begin{itemize}
+  \item $s \in S$ : \ the set of scenarios,
+  \item $d \in D$ : \ the set of fire departments, 
+  \item $p_{s} \in P_{s}$ : \ the set of emergency sites under $s$, 
+  \item $v \in V$ : \ the set of emergency vehicles, 
+  \item $n \in N$ :\ the set of the numbers of dispatching.
+  Note that each emergency vehicle can be dispatched at most $|N|$ times for each scenario.
+  \end{itemize}
+  \item Parameters
+  \begin{itemize}
+  \item $t^\text{call}_{s,p_{s}}$ : \ the call-in time from $p_{s}$ under $s$,
+  \item $t^\text{travel}_{s,d,p_{s}}$ : \ the traveling duration between $d$ and $p_{s}$ under $s$,
+  \item $t^\text{service}_{s,p_{s}}$ : \ the service duration at $p_{s}$ under $s$,
+  \item $t^\text{setup}$ : \ the setup duration for dispatching,
+  \item $t^\text{allow}$ : \ the threshold of allowable duration,
+  \item $\mathbb{P}_{s}$ : \ the occurrence probability of $s$,
+  \item $M_{1}/M_{2}$ : \ sufficiently large constant numbers (so-called \lq\lq big-M\rq\rq).
+  \end{itemize}
+\item Decision variables
+  \begin{itemize}
+
+\item
+   \begin{eqnarray}
+    x_{s,p_{s},n,v}=\left \{
+    \begin{array}{ll}
+      1, &\hspace{0.1cm} \mbox{ $v$ is dispatched to $p_{s}$ with the $n$-th}\\
+      &\mbox{dispatch under $s$,}\\
+      %&\mbox{ }\\
+      0, &\hspace{0.1cm} \mbox{otherwise,}\nonumber
+    \end{array}
+    \right.
+   \end{eqnarray}
+    %% $x_{a,j,n,k}$ : \ Binary decision variable that takes the value 1 if emergency vehicle $k$ is dispatched to demand point $j$ in the number of dispatch $n$ under scenario $a$,and 0 otherwise.
+
+  \item %% $y_{i,k}$ : \ Binary decision variable that takes the value 1 if emergency vehicle $k$ is assigned to emergency satation $i$, and 0 otherwise.
+    \begin{eqnarray}
+    y_{d,v}=\left \{
+    \begin{array}{ll}
+      1, &\hspace{0.1cm} \mbox{$v$ is assigned to $d$,}\\
+      %&\mbox{,}\\
+      0,&\hspace{0.1cm} \mbox{otherwise,}\nonumber
+    \end{array}
+    \right.
+    \end{eqnarray}
+
+  \item $z^\text{dispatch}_{s,n,v}$ : \ the dispatch time of $v$ with the $n$-th dispatch under $s$,
+  \item $z^\text{travel}_{s,n,v}$ : \ the traveling duration of $v$ with the $n$-th dispatch under $s$,
+  \item $z^\text{arrival}_{s,n,v}$ : \ the arrival time of $v$ with the $n$-th dispatch under $s$,
+  \item $z^\text{delay}_{s,p_{s},n,v}$ : \ the delay time of $v$ for $p_{s}$ with the $n$-th dispatch under $s$,
+  \item $z^\text{end}_{s,n,v}$ : \ the end-of-service time of $v$ with the $n$-th dispatch under $s$, 
+  \item $z^\text{return}_{s,n,v}$ : \ the return time of $v$ with the $n$-th dispatch under $s$.
+  %% \item $m_{a,j,n,k}$ : \ the penalty time of the response time of an emergency vehicle $k$ for a site $j$ with the $n$-th dispatch under a scenario $a$ exceeds 30 minutes.
+    %$\max\{0,v_{a,n,k}-u_{a,j}\}$. ŽÔ—¼ ${k \in K}$ ‚ª $n$ ‰ñ–Ú‚Ìo“®‚ÅŒ»ê $j$ ‚Ö“ž’…‚·‚éŽž‚Æ’Ê•ñŽž‚Ì·
+  %\item $q_{a,j,n,k}$ := \ $\max\{0,w_{a,n-1,k}-u_{a,j}\}$%% ŽÔ—¼ ${k \in K}$  ‚Ì $(n-1)$ ‰ñ–Ú‚ÌÁ–h‚Ö‹A’…Žž‚Æ$n$‰ñ–Ú‚ÌŒ»ê’Ê•ñŽž·
+  \end{itemize}
+\end{itemize}
+\subsection{Constraints}
+In this research, we built the following constraints.
+
+ \begin{description}
+      \setlength{\parskip}{-0.5mm}
+      \setlength{\itemsep}{-0.5mm}
+      \setlength{\mathindent}{0pt}
+\item[\small  Constraints on allocation and dispatching rule of vehicles]
+\item
+  \begin{eqnarray}
+    \sum_{d \in D}y_{d,v}=1
+    \quad (v \in V) ,           
+    \label{eq:Position}
+  \end{eqnarray}
+     
+\item 
+  \begin{eqnarray}
+    \sum_{n \in N, v \in V}x_{s,p_{s},n,v}=1
+    \quad ( s \in  S,p_{s} \in P_{s}) ,
+    \label{eq:VehicleDemand}
+  \end{eqnarray}
+\item 
+  \begin{eqnarray}
+    \sum_{p_{s} \in P_{s}}x_{s,p_{s},n,v}\leq 1
+    \quad (s \in  S,n \in N, v \in V) .
+    \label{eq:LimitVenue}
+  \end{eqnarray}
+
+
+  
+ \end{description}
+  The constraint (\ref{eq:Position}) ensures that the emergency vehicles are assigned to one fire department. The constraint (\ref{eq:VehicleDemand}) ensures that an emergency vehicle must be dispatched to an emergency site. The constraint (\ref{eq:LimitVenue}) ensures that each emergency vehicle can only be dispatched to at most one emergency site in each dispatching.
+ \begin{description}
+         \setlength{\parskip}{-0.7mm}
+         \setlength{\itemsep}{-0.7mm}
+         \setlength{\mathindent}{0pt}
+\item[\small Constraints on variables of time] %(Fig.~\ref{fig:system})
+\item  
+  \begin{eqnarray}
+    z^\text{dispatch}_{s,n,v} \geq  \sum_{p_{s} \in P_{s}}x_{s,p_{s},n,v}t^\text{call}_{s,p_{s}}+t^\text{setup} 
+    \nonumber
+    \\\quad (s \in  S, n \in N, v \in V),\hspace{-15mm} 
+    \label{eq:PrepareTime}
+  \end{eqnarray}
+  
+\item  
+  \begin{eqnarray}
+    z^\text{travel}_{s,n,v} \geq t^\text{travel}_{s,d,p_{s}}-(1-y_{d,v})M_{1}-(1-x_{s,p_{s},n,v})M_{1}\nonumber
+     \\\quad (s \in  S, d \in D, p_{s} \in P_{s}, n \in N, v \in V) , \label{eq:NeedTime} 
+  \end{eqnarray}
+\item 
+  \begin{eqnarray}
+    z^\text{arrival}_{s,n,v} \geq z^\text{dispatch}_{s,n,v}+z^\text{travel}_{s,n,v}
+    \quad (s \in  S, n \in N, v \in V) ,
+\label{eq:GoTime}
+  \end{eqnarray}
+
+\item  
+  \begin{eqnarray}
+    z^\text{end}_{s,n,v} = z^\text{arrival}_{s,n,v}+ \sum_{p_{s} \in P_{s}}x_{s,p_{s},n,v}t^\text{service}_{s,p_{s}}\nonumber
+    \\\quad (s \in S, n \in N, v \in V),\hspace{-7mm}
+\label{eq:ArriveTime}
+  \end{eqnarray}
+\item 
+ 
+  \begin{eqnarray}
+    z^\text{return}_{s,n,v} = z^\text{end}_{s,n,v}+z^\text{travel}_{s,n,v}
+    \quad (s \in S, n \in N, v \in V) ,
+    \label{eq:BackTime}
+  \end{eqnarray}
+
+\item 
+  \begin{eqnarray}
+    z^\text{return}_{s,n-1,v}+t^\text{setup} \leq z^\text{dispatch}_{s,n,v}
+    \nonumber
+    \\ \lefteqn{(s \in  S, n \in N, v \in V :n \geq 2),}\hspace{6mm}
+    \label{eq:BackTimeAndGoTime}
+  \end{eqnarray}
+\item
+      \begin{eqnarray}
+      z^\text{delay}_{s,p_{s},n,v} \geq z^\text{arrival}_{s,n,v}-t^\text{call}_{s,p_{s}}-t^\text{allow}-(1-x_{s,p_{s},n,v})M_{2}
+      \nonumber
+      \\ \quad  (s \in  S, p_{s} \in P_{s}, n \in N, v \in V) .
+      \label{eq:Difference}
+      \end{eqnarray}
+ \end{description}
+
+  The constraint (\ref{eq:PrepareTime}) ensures that the setup duration is necessary for dispatching. 
+ The constraint (\ref{eq:NeedTime}) becomes $z^\text{travel}_{s,n,v} \geq t^\text{travel}_{s,d,p_{s}}$ when $x_{s,p_{s},n,v}=1$ and $y_{d,v}=1$ hold, and $z^\text{travel}_{s,n,v}$ shows the upper bound of traveling duration between the fire department and the emergency site. The constraints (\ref{eq:GoTime}) and (\ref{eq:ArriveTime}) determine the arrival time and the end-of-service time of an emergency vehicle at an emergency site, respectively. 
+ The constraint (\ref{eq:BackTime}) computes the return time of an emergency vehicle. The constraint (\ref{eq:BackTimeAndGoTime}) defines the relationship between the return time and the next dispatching time of an emergency vehicle. The constraint (\ref{eq:Difference}) computes the delay time. Now we consider the case that $x_{s,p_{s},n,v}$ equals 1. If the response time is smaller than or equal to $t^\text{allow}$, then $z^\text{delay}_{s,p_{s},n,v}$ equals 0. Otherwise, $z^\text{delay}_{s,p_{s},n,v}$ equals the delay time, which shows the exceedance of $t^\text{allow}$.
+  
+ %% \begin{description}
+%%    \setlength{\parskip}{-0.5mm}
+%%    \setlength{\itemsep}{-0.5mm}
+%% \item[\small Priority and posteriority of time variables]
+%% \item  
+%%     \begin{eqnarray}
+%%       z^\text{arrival}_{s,n,v} \geq z^\text{dispatch}_{s,n,v}
+%%       \quad  (s \in  S, n \in N, v \in V) ,
+%%       \label{eq:ArriveGoTime}
+%%     \end{eqnarray}
+
+%% \item 
+%%   \begin{eqnarray}
+%%     z^\text{end}_{s,n,v} \geq z^\text{arrival}_{s,n,v}
+%%     \quad  (s \in  S, n \in N, v \in V) ,
+%%     \label{eq:OverArriveTime}
+%%     \end{eqnarray}
+
+%% \item 
+%%     \begin{eqnarray}
+%%       z^\text{return}_{s,n,v} \geq z^\text{end}_{s,n,v}
+%%       \quad (s \in  S, n \in N, v \in V) , 
+%%       \label{eq:BackOverTime}
+%%     \end{eqnarray}
+%\end{description}
+  %% The constraints (\ref{eq:ArriveGoTime}), (\ref{eq:OverArriveTime}) and (\ref{eq:BackOverTime}) show the order of time variables (Fig.~\ref{fig:system}).
+ \begin{description}
+   \setlength{\parskip}{-0.5mm}
+   \setlength{\itemsep}{-0.5mm}
+\item[\small Nonnegativity of variables]
+
+\item  
+    \begin{eqnarray}
+      z^\text{travel}_{s,n,v} \geq 0 \quad (s \in  S, n \in N, v \in V) ,
+      \label{eq:Nonnegative3}
+    \end{eqnarray}    
+
+
+\item 
+    \begin{eqnarray}
+      z^\text{delay}_{s,p_{s},n,v} \geq 0 \quad (s \in  S, p_{s} \in P_{s}, n \in N, v \in V) .
+      \label{eq:Nonnegative1}
+    \end{eqnarray}
+
+ \end{description}
+ The constraints (\ref{eq:Nonnegative3}) and (\ref{eq:Nonnegative1}) ensure the nonnegativity of $z^\text{travel}_{s,n,v}$ and $z^\text{delay}_{s,p_{s},n,v}$.
+ \subsection{Objective function}
+ 
+  \begin{description}
+       \setlength{\parskip}{-0mm}
+       \setlength{\itemsep}{-0mm}
+\item
+  \begin{equation}
+  f =\sum_{s \in  S}\left(\mathbb{P}_{s}\cdot\sum_{p_{s} \in P_{s}, n \in N, v \in V}z^\text{delay}_{s,p_{s},n,v}\right)\label{Objective}
+  \nonumber
+  \end{equation}
+  \end{description}
+  $f$ shows the expected value of the aggregation of all delay times.
+ \subsection{Mathematical model}
+ Our proposed model is  presented as follows:
+ \begin{eqnarray}
+   (
+   \heartsuit
+   )
+ \left|
+ \begin{array}{ll}
+   \mbox{minimize \quad}
+   & f \\
+   \mbox{subject to \quad}
+    & (\ref{eq:Position})\sim (\ref{eq:Nonnegative1}).
+   \nonumber	
+ \end{array}
+ \right.
+ \label{eq:prob2}
+ \end{eqnarray}
+$(\heartsuit)$ is used to find the optimal allocation of emergency vehicles by minimizing the total delay time for each emergency vehicle. 
+  
+\section{Numerical experiments}\label{section4}
+In this section, we solve some numerical instances which are generated randomly. Through these numerical experiments,  we confirm the validness and performance of the proposed model.
+\subsection{Generation of instances}\label{SubsectionForm}
+First, we supposed a 40 (km) $\times$ 30 (km) rectangular region and divided it into 12 parts (A1--C4). Also, we set fire departments in the region. In our experiments, we try to find the optimal solution for (i) the case of five fire departments (Fig.~\ref{fig:location}) and (ii) the case of 20--30 fire departments (Fig.~\ref{fig:location_large}).
+
+
+Next, we set the values of the parameters $t^\text{call}_{s,p_{s}}$, $t^\text{travel}_{s,d,p_{s}}$, $t^\text{service}_{s,p_{s}}$ and $t^\text{setup}$. The assumptions of each parameter are shown as follows:
+\begin{itemize}
+\item The number of emergency sites in each scenario $p_{s}$ follows the Poisson distribution whose mean value equals $\lambda_{1}$.
+\item The number of emergency sites in each part is proportional to the probability of occurrence of emergency sites as shown in Table~\ref{tb:pro}.
+\item The locations of emergency sites are distributed uniformly in each part.
+\item The interval of $t^\text{call}_{s,p_{s}}$ follows the exponential distribution whose mean value equals $1/\lambda_{1}$ (day).
+\item The distance $\delta_{s,d,p_{s}}$ (km) between the fire department $d$ and the emergency site $p_{s}$ in each scenario $s$ is measured in the Euclidean norm.
+\item The traveling time of an emergency vehicle from a fire department $d$ to an emergency site $p_{s}$ in a scenario $s$ is defined as
+  \begin{center}   
+    $t^\text{travel}_{s,d,p_{s}}$= $(\delta_{s,d,p_{s}}$ $/$ $q)$ $\times$ 60 + $r_{s,d,p_{s}}$ (min.),
+  \end{center}
+where $q$ (km/h) is the average speed of emergency vehicles and $r_{s,d,p_{s}}$ (min.) follows a uniform distribution on the interval $\left[l,u\right]$ (min.). Here, the term $r_{s,d,p_{s}}$ is included to express a potential delay.
+
+\item The service time $t^\text{service}_{s,p_{s}}$ follows the exponential distribution whose mean value equals $1/\lambda_{2}$ (day).
+\item The occurrence probability $\mathbb{P}_{s}$ equals $1/|S|$.
+\item The setup time $t^\text{setup}$ equals three minutes.
+\end{itemize}
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{location_base20.pdf}
+    \caption{(i) the location of five fire departments}
+    \label{fig:location}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{location_base_large.pdf}
+    \caption{(ii) the location of thirty fire departments}
+    \label{fig:location_large}
+  \end{center}
+\end{figure}
+
+\begin{table}[htb]
+  \begin{center}
+    \caption{Probability of occurrence of emergency sites}
+  \begin{tabular}{|c|c|c|c|c|} \hline
+     & 1 & 2 & 3&4 \\ \hline
+    A& 0.10 & 0.10 &0.02&0.20\\ \hline
+    B& 0.03 & 0.07 &0.08&0.02\\ \hline
+    C& 0.11 & 0.20 &0.03&0.04 \\ \hline
+  \end{tabular}
+   \label{tb:pro}
+  \end{center}
+\end{table}
+
+%% \subsection{Experimental outline and computational settings}
+%% In this subsection, we introduce the experimental outline and computational settings. In our experiments, we examine the performance of our model for the case (i) and (ii), which were explained above.
+
+  %% [Small] The performance of the model would be observed by small-scale experiments with different parameters.
+
+  %% [Large] The performance of the model would be observed by large-scale experiments.
+In both the cases (i) and (ii), we set the values of some parameters in common as shown in Table~\ref{tb:param} to generate scenarios for our numerical experiments. In the following, we explain the detail of instance settings of both cases.
+\begin{table}[H]
+  \begin{center}
+    \caption{Parameter values}
+    \begin{tabular}{ccccccccc}\hline
+      Parameter  & $|S|$&$q$&$l$&$u$&$\lambda_{2}$\\\hline
+      Value  &30&30&0&15&20\\\hline
+    \end{tabular}
+    \label{tb:param}
+  \end{center}
+\end{table}
+
+\begin{description}
+\item
+  \begin{itemize}
+  \item Instance settings of (i)\\
+         We set the $\lambda_{1}$=10, and generated $t^\text{call}_{s,p_{s}}$, $t^\text{travel}_{s,d,p_{s}}$, $t^\text{service}_{s,p_{s}}$ and $t^\text{setup}$. Moreover, we solved $(\heartsuit)$ with six different settings (Table~\ref{instance}). Note that these six cases use the same scenarios to examine the effect of some parameters.%% and divided it into six cases by changing the $|V|$, $|N|$ and $t^\text{thres}$ as shown in Table.~\ref{instance} for small-scale experiments. Besides, the total number of emergency sites is 302.
+ \end{itemize}
+\end{description}
+\begin{table}[H]
+  \begin{center}
+    \caption{Parameter settings for small-scale experiments}
+    \begin{tabular}{cccccccccc}\hline
+     &$|V|$ &$|N|$&$t^\text{allow}$\\\hline
+
+      Case (i)-1 &3&8&0\\
+      Case (i)-2 &3&8&20\\
+      Case (i)-3 &4&5&0\\
+      Case (i)-4 &4&5&20\\
+      Case (i)-5 &5&4&0\\
+      Case (i)-6 &5&4&20\\
+
+      \hline
+    \end{tabular}
+    \label{instance}
+  \end{center}
+\end{table}
+\begin{description}
+\item
+  \begin{itemize}
+  \item Instance settings of (ii)\\
+    We generated three cases as shown in Table~\ref{largescale1} for large-scale experiments.\\
+    First, we set the value of $|D|$ and $\lambda_{1}$ as shown in Table~\ref{largescale1} and generated scenarios. In these cases, the fire departments are distributed randomly in the region. After that, we solved $(\heartsuit)$ with the settings in Table~\ref{largescale1}.  
+
+  \end{itemize}
+\end{description}
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Parameter settings for large-scale experiments}
+    \begin{tabular}{ccc|cccccc}\hline
+      &$|D|$   &$\lambda_{1}$&$|V|$ &$|N|$&$t^\text{allow}$ \\\hline
+      Case (ii)-1& 20 &40  & 20 &4&0\\
+      Case (ii)-2& 25 &50  & 25 &5&0\\
+      Case (ii)-3& 30 &60  & 30 &6&0\\\hline
+    \end{tabular}
+    \label{largescale1}
+  \end{center}
+\end{table}
+
+
+
+\subsection{Experimental results}
+In this subsection, we show the results of the small-scale and large-scale experiments.
+In this research, we used the computational environment as shown in Table~\ref{tb:computation enviroment} to conduct the numerical experiments.
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Computational environment}
+    \begin{tabular}{cc}\hline
+      OS      & Microsoft Windows 10 Pro \\
+      CPU     & Intel(R) Core(TM) i7-6950X CPU @ 3.00GHz\\
+      Memory  & 64.0 GB \\
+      Solver  & Gurobi Optimizer version 7.0.1 \\
+      \hline
+    \end{tabular}
+    \label{tb:computation enviroment}
+  \end{center}
+\end{table}
+
+\subsubsection{ Results of (i): small-scale experiments}
+In this case, we set the limit of computation time as 1800 seconds to solve each case. %% If the solver cannot find the optimal solution within the time limitation, we regard the best feasible solution as the optimal solution.
+The objective value and the location of EVs obtained by solving $(\heartsuit)$ is shown in Table~\ref{obj}. 
+
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Location of EVs and objective value}
+    \begin{tabular}{cccccc|cc}\hline
+     & $\blacklozenge$ & $\blacksquare$& $\blacktriangle$&$\bullet$&$\star$& Obj.val. &Gap(\%)\\\hline
+
+      Case (i)-1 & 1 &0&0&1&1&323.64&91.3\\
+      Case (i)-2 & 0 &0&1&2&0&178.66&100\\
+      Case (i)-3 & 1 &1&1&0&1&264.95&89.3\\
+      Case (i)-4 & 1 &0&1&2&0&116.80&100\\
+      Case (i)-5 & 0 &2&2&0&1&268.90&89.5\\
+      Case (i)-6 & 1 &1&0&2&1&78.58&100\\
+
+      \hline
+    \end{tabular}
+    \label{obj}\\
+    %\begin{tablenotes}
+    %\item
+      Gap(\%): (upper bound - lower bound) $/$ upper bound $\times$ 100
+    %\end{tablenotes}
+  \end{center}
+\end{table}
+
+
+
+
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Optimal location of EVs and Number of dispatching}
+%%     \begin{tabular}{c|ccccc|ccccccc}\hline
+%%       &&\multicolumn{4}{c|}{Location of EVs}&\multicolumn{5}{c}{Number of dispatching}&\\ \cline{2-12}
+%%       & $\blacklozenge$ & $\blacksquare$& $\blacktriangle$&$\bullet$&$\star$& $\blacklozenge$& $\blacksquare$& $\blacktriangle$&$\bullet$&$\star$&\\\hline
+%%       Case (i)-1 & 1 &0&0&1&1&98 &0&0&95&90&\\
+%%       Case (i)-2 & 0 &0&1&2&0&0 &0&102&181&0&\\
+%%       Case (i)-3 & 1 &1&1&0&1&58 &74&68&0&83&\\
+%%       Case (i)-4 & 1 &0&1&2&0&70 &0&72&141&0&\\
+%%       Case (i)-5 & 0 &2&2&0&1&0 &105&104&0&74&\\
+%%       Case (i)-6 & 1 &1&0&2&1&67 &56&0&89&71&\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{caselocation}
+%%   \end{center}
+%% \end{table}
+
+%% We can know that if we fix the binary variable $y_{d,v}$ and we can get the useful solution.
+
+
+%% Because the Case (i)-5 have a poor performance than Case (i)-3, we seek to change the location of EVs in Case (i)-5 as $\{\blacklozenge, \blacksquare, \blacktriangle,\blacktriangle,\star\}$ which includes the location of EVs in Case (i)-3. The objective value and the number of emergency sites which are counted by the response time is show in
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Number of emergency sites}
+%%     \begin{tabular}{cccccc|cc}\hline
+%%       &$\leq$ 20 (min.)&$\leq$ 30&$\leq$ 40&$\leq$ 50&$>$ 50& Obj.val. &Gap\\\hline
+%%       Case (i)-5 &57&169&245&274&9\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{bar_2}
+%%   \end{center}
+%% \end{table}
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Number of dispatching for each fire departments}
+%%     \begin{tabular}{cccccccccc}\hline
+%%       &$\blacklozenge$& $\blacksquare$& $\blacktriangle$&$\bullet$&$\star$& \\\hline
+%%       Case 1 & 0 &0&191&111&0&\\
+%%       Case 2 & 0 &0&105&197&0&\\
+%%       Case 3 & 90 &0&0&212&0&\\
+%%       Case 4 & 73 &0&78&151&0&\\
+%%       Case 5 & 62 &50&64&126&0&\\
+%%       Case 6 & 110 &0&62&130&0&\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{dispatch}
+%%   \end{center}
+%% \end{table}
+
+
+
+
+
+\subsubsection{Results of (ii): large-scale experiments}
+In order to examine the ability of our proposed model $(\heartsuit)$ for large-scale problems, we tried to solve three problems of the case (ii). We set the computation time as 43200 seconds for this case. %% if the solver can't find the feasible solution within 43200 seconds, we called it no feasible solution.
+The computation results are shown in Table~\ref{largescale}.
+\begin{table}[H]
+  \begin{center}
+    \caption{Computation results for the case (ii)}
+    \begin{tabular}{ccccccccc}\hline
+      &Feasiblity&$(\ast)$&Gap(\%) \\\hline
+      Case (ii)-1&Yes&4691sec&100\\
+      Case (ii)-2&Yes&20772sec&100\\
+      Case (ii)-3&None&None&100\\\hline
+    \end{tabular}
+    \label{largescale}\\
+    %\begin{tablenotes}
+  %\item
+    $(\ast)$: the duration for finding the first feasible solution
+      %\end{tablenotes}
+  \end{center}
+\end{table}
+
+
+
+
+
+
+\subsection{Discussion}
+In this section, we discuss the experimental results above.
+
+
+Actually, all the obtained solutions for Case (i) are incumbent: Table~\ref{obj} shows the best solution at the end of the computation. Moreover, according to Table~\ref{obj}, we can see that the gaps are very large. Therefore, the usefulness of our model is very limited. Therefore, we conducted another experiment: we used the location of EVs obtained by the experiments in Case (i) to fix the binary variable $y_{d,v}$, and try to solve each case again. %% Also, the number of allocated emergency vehicles at each fire department and the number of dispatching from each fire department are shown in Table~\ref{caselocation}.
+In this additional experiment, the limit of computation time is 3600 seconds.
+
+
+Table~\ref{bar_1} shows the obtained objective value and Table~\ref{bar_2} shows the numbers of emergency sites which are counted by the response time. In  Case (i)-3 $\sim$ Case (i)-6, the solver can find the optimal solution in hundreds of seconds. Also, in Case (i)-1 and Case (i)-2, the gap is comparatively small.
+
+
+As a result, if the allocation of EVs is fixed, then we can find the optimal dispatch in many cases. Therefore, we may construct another approach to solve $(\heartsuit)$. The framework is as follows: we set an allocation of EVs by metaheuristics and find the optimal dispatch under the allocation by solving $(\heartsuit)$. Also, we try to find the optimal allocation by local search.
+
+
+Fig.~\ref{fig:case1} $\sim$ Fig.~\ref{fig:case6} show the result of dispatch in Case (i)-1 $\sim$ Case (i)-6. The figures ($\blacklozenge$, $\blacksquare$, $\blacktriangle$, $\bullet$, $\star$) show the places of emergency cites and the bases of EVs which are assigned to the cites in the optimal solutions.
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Objective value}
+    \begin{tabular}{cccccc}\hline
+                &Obj.val. &Gap(\%)&Time(sec.)\\\hline
+      Case (i)-1 &305.38&1.92&3600\\
+      Case (i)-2 &166.14&9.07&3600\\
+      Case (i)-3 &258.16&0&281\\
+      Case (i)-4 &106.43&0&115\\
+      Case (i)-5 &265.70&0&192\\
+      Case (i)-6 &73.55 &0&37\\
+      \hline
+    \end{tabular}
+    \label{bar_1}
+  \end{center}
+\end{table}
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Number of emergency sites}
+    \begin{tabular}{cccccc}\hline
+      &$\leq$ 20 (min.)&$\leq$ 30&$\leq$ 40&$\leq$ 50&$>$ 50\\\hline
+      Case (i)-1 &55&138&221&262&21\\
+      Case (i)-2 &37&111&180&243&40\\
+      Case (i)-3 &71&179&253&277&6\\
+      Case (i)-4 &57&150&217&272&11\\
+      Case (i)-5 &56&171&252&277&6\\
+      Case (i)-6 &75&198&268&280&3\\
+      \hline
+    \end{tabular}
+    \label{bar_2}
+  \end{center}
+\end{table}
+
+
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Number of emergency sites and objective value}
+%%     \scalebox{0.8}{
+%%     \begin{tabular}{cccccc|ccc}\hline
+%%       &$\leq$ 20 (min.)&$\leq$ 30&$\leq$ 40&$\leq$ 50&$>$ 50& Obj.val. &Gap(\%)&Time(sec.)\\\hline
+%%       Case (i)-1 &55&138&221&262&21&305.38&1.92&3600\\
+%%       Case (i)-2 &37&111&180&243&40&166.14&9.07&3600\\
+%%       Case (i)-3 &71&179&253&277&6&258.16&0&281\\
+%%       Case (i)-4 &57&150&217&272&11&106.43&0&115\\
+%%       Case (i)-5 &56&171&252&277&6&265.70&0&192\\
+%%       Case (i)-6 &75&198&268&280&3&73.55&0&37\\
+%%       \hline
+%%     \end{tabular}
+%%     }
+%%     \label{bar_1}
+%%   \end{center}
+%% \end{table}
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Number of the response time within various time periods}
+%%     \begin{tabular}{cccccccccc}\hline
+%%       &$\leq$ 15&$\leq$ 30&$\leq$ 45&$\leq$ 60&$>$ 60\\\hline
+%%       Case 1 & 4 &58&138&183&119\\
+%%       Case 3 & 10 &85&175&222&50\\
+%%       Case 5 & 24 &122&219&259&43\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{bar_1}
+%%   \end{center}
+%% \end{table}
+
+
+
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Number of the response time within various time periods}
+%%     \begin{tabular}{cccccccccc}\hline
+%%       &$\leq$ 30&$\leq$ 45&$\leq$ 60&$>$ 60\\\hline
+%%       Case S-2 & 51&137&181&121\\
+%%       Case S-4 & 95&198&230&72 \\
+%%       Case S-6 & 114&263&267&35\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{bar_2}
+%%   \end{center}
+%% \end{table}
+
+
+
+
+
+
+Next, we analyze the Case (ii)-1 $\sim$ Case (ii)-3. According to the computation results (Table~\ref{largescale}), our model $(\heartsuit)$ can find the feasible solution for Case (ii)-1 and Case (ii)-2 by the solver. However, the gap between the upper bound and the lower bound is too large. Moreover, our model $(\heartsuit)$ cannot find the feasible solution for Case (ii)-3 by the solver.  We plan to design a hybrid algorithm which is explained above in the near future. 
+
+
+
+
+
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_1.pdf}
+    \caption{Dispatching results of Case (i)-1}
+    \label{fig:case1}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_4.pdf}
+    \caption{Dispatching results of Case (i)-2}
+    \label{fig:case2}
+  \end{center}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_2.pdf}
+    \caption{Dispatching results of Case (i)-3}
+    \label{fig:case3}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_5.pdf}
+    \caption{Dispatching results of Case (i)-4}
+    \label{fig:case4}
+  \end{center}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_3.pdf}
+    \caption{Dispatching results of Case (i)-5}
+    \label{fig:case5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[clip,scale=0.6,bb=0 0 400 275]{iss_6.pdf}
+    \caption{Dispatching results of Case (i)-6}
+    \label{fig:case6}
+  \end{center}
+\end{figure}
+
+
+
+
+
+%% In model $(\clubsuit)$, if the objective value equals 1 that means this case is efficiency. Besides, we set input item $a \in A$, output item $c \in C$, case $g \in G$, target case $\bar{g} \in \bar{G}$. In Table.~\ref{dea1} shown the data for $(\clubsuit)$, among it, $(\heartsuit)$ is the number of emergncy vehicles, $(\spadesuit)$ is the number of fire departments, $(\diamondsuit)$ is the number of the response time is less or equal 30 minutes. 
+%% \vspace{-0mm}
+%%  \begin{eqnarray}
+%%    (
+%%    \clubsuit
+%%    )
+%%  \left|
+%%  \begin{array}{ll}
+%%    \mbox{maximize \quad}
+%%    & \displaystyle\sum_{\bar{g} \in \bar{G}, j \in J}outD_{\bar{g},c} \cdot outW_{c}\\
+%%    \mbox{subject to \quad}
+%%    & \displaystyle\sum_{a \in A}inD_{\bar{g},c}inW_{i}=1 \quad(\bar{g} \in \bar{G})\\
+%%    & \displaystyle\sum_{c \in C}outD_{g,c}outW_{c} \leq \displaystyle\sum_{a \in A}inD_{g,a}inW_{a}\\
+%%    & (g \in G)\\
+%%    & inW_{a} \leq 0\quad (a \in A)\\
+%%    & outW_{c} \leq 0\quad (c \in C)
+%%    \nonumber	
+%%  \end{array}
+%%  \right.
+%%  \label{eq:prob2}
+%%  \end{eqnarray}
+%%  where
+%%  \begin{itemize}
+%% \item Variables
+%%   \begin{itemize}
+%%   \item $inW_{a}$: \ the weight for  $a$,
+%%   \item $outW_{c}$: \  the weight for $c$.
+%%   \end{itemize}
+%% \item Parameters
+%%   \begin{itemize}
+%%   \item $inD_{g,a}$: \ the data of $a$ for each $g$,
+%%   \item $outD_{g,c}$: \ the data of $c$ for each $g$.
+%%   \end{itemize}
+%% \end{itemize}
+
+
+
+%%  In DEA, an analysis object such as each case is called DMU (decision making unit). It is difficult to evaluate all DMU at one time, so we consider the problem of paying attention to the target case $\bar{g} \in \bar{G} \subset G$ to maximize the efficiency by $(\clubsuit)$. The computation results are shown in Table.~\ref{dea2}, some of the results are represented by a rounded fourth number. We can know that Case number (3, 5, 6) which has the objective value of 1 is efficient, while the Case number (1, 2, 4) which is smaller than 1 is inefficient even if it selects any weight satisfying the various constraints.
+
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Data for $(\clubsuit)$}
+%%     \begin{tabular}{cccccccccc}\hline
+%%       &Case 1&Case 2&Case 3&Case 4&Case 5&Case 6\\\hline
+%%        $(\spadesuit)$ & 2 &2&2&3&4&3\\
+%%       $(\heartsuit)$ & 3&3&4&4&5&5\\
+%%        $(\diamondsuit)$ & 58 &51&85&95&122&114\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{dea1}
+%%   \end{center}
+%% \end{table}
+%% \vspace{-3mm}
+%% \begin{table}[H]
+%%   \begin{center}
+%%     \caption{Results}
+%%     \begin{tabular}{cccccccccc}\hline
+%%       &Case 1&Case 2&Case 3&Case 4&Case 5&Case 6\\\hline
+%%       Obj & 0.829 &0.743&1&0.99&1&1\\
+%%       weight $(\spadesuit)$& 0.114 &0.114&0.182&0.083&0&0.07\\
+%%       weight $(\heartsuit)$ & 0.257&0.257&0.159&0.188&0.2&0.158\\
+%%       weight $(\diamondsuit)$& 0.014 &0.014&0.118&0.01&0.008&0.008\\
+%%       \hline
+%%     \end{tabular}
+%%     \label{dea2}
+%%   \end{center}
+%% \end{table}
+
+
+
+
+
+
+
+\section{Conclusions and future works}\label{conclusion}
+This paper focused on the emergency vehicle allocation problem with integration of dispatch. The proposed model aims to minimize the delay time in order to arrive at the emergency site as fast as possible.
+
+
+In order to examine the performance of the proposed model, some test instances were generated randomly and solved them. But the solver cannot ensure the accuracy of the obtained solutions: the gaps are comparatively large. However, if we fixed the allocation of EVs, then the solver can find the optimal or good dispatch. We would like to construct a new method for solving this problem by using this property. Note that: (a) we will try to find the allocation of emergency vehicle by local search. (b) we will try to use the fixed allocation which was generated at phase (a) to find the optimal or good dispatch by general-purpose solver.
+%% We know the model action by small-scale cases (Case (i)-1 $\sim$ Case (i)-6) by changing some parameters and use the result of the location of EVs to fix the binary variable $y_{d,v}$ (Determine the affiliation of emergency vehicles) to solve each case again. Problems are solved quickly. Next, we expanded the scale of problems (Case (ii)-1 $\sim$ Case (ii)-3). The computation results show the efficacy of the proposed model. However, if the problem scale exceeds the Case (ii)-2 like Case (ii)-3, it is hard to be solved. We plan to design a hybrid algorithm as the future work. %% 
+%% therefore, we should modify the optimization model and design an algorithm to solve the large-scale problem in the future.
+%% Moreover, we also need to use real data to validate the proposed model in the future.
+
+
+
+
+
+%% if you do not use Bibtex, comment out the following line and uncomment & edit the subsequent lines 
+\bibliography{reference}
+\begin{thebibliography}{xx}
+\harvarditem[FDMA]{FDMA}{2015}{FDMA15}
+Publication Pamphlet of Fire and Disaster Management Agency, 
+\url{https://www.fdma.go.jp/neuter/about/pdf/en/2015/all.pdf},
+(Download at 2019/01/22).
+  
+\harvarditem[FDMA]{FDMA}{2018}{FDMA18}
+White paper of Fire and Disaster Management Agency, 
+\url{http://www.fdma.go.jp/html/hakusho/h29/h29/html/s4-2-2.html},
+(2019/01/16 confirmed).
+
+\harvarditem[Inakawa et al.]{Inakawa et al.}{2004}{keisuke04}
+Inakawa, K. and Suzuki, A. (2004).
+Optimal location problem for urban emergency vehicles with continuous-time markov chain.
+%% OPTIMAL LOCATION PROBLEM FOR URBAN EMERGENCY VEHICLES WITH CONTINUOUS-TIME MARKOV CHAIN.
+{\it Transactions of the Operations Research Society of Japan}~{\bf47}: 25--39.
+
+
+\harvarditem[Lei et al.]{Lei et al.}{2015}{Lei15}
+Lei, C., Lin, W.H. and Miao, L. (2015).
+A stochastic emergency vehicle redeployment model for an effective response to traffic incidents.
+{\it IEEE Transactions on Intelligent Transportation Systems}~{\bf16}(2): 898--909.
+
+
+\harvarditem[Saeed et al.]{Saeed et al.}{2018}{Saeed18}
+Saeed, F., Majid, R. and Seyed, Mohammad, Z. (2018).
+An Optimization Model for Emergency Vehicle Location and Relocation with Consideration of Unavailability Time. {\it SCIENTIA IRANICA}~{\bf 25}(6): 3685--3699.
+
+\harvarditem[Xiao-Xia et al.]{Xiao-Xia et al.}{2013}{Xiao-Xia13}
+Xiao-Xia, R., Yi, L., Rui-Rui, Y. and Jiang-Hua, Z. (2013).
+A Robust Optimization Approach to Emergency Vehicle Scheduling.
+{\it Mathematical Problems in Engineering}~ \url{https://doi.org/10.1155/2013/848312}.
+
+
+ \end{thebibliography}
+
+\end{document}
