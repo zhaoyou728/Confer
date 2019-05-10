@@ -1,0 +1,1 @@
+len(list(open(r"abs.txt").read()))

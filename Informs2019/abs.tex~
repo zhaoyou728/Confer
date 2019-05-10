@@ -1,0 +1,46 @@
+\documentclass[a4j]{jarticle}
+\usepackage{ascmac}
+\usepackage{fancybox}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{here}
+\usepackage{caption}
+\usepackage{url}
+\renewcommand{\baselinestretch}{1.9}
+\setlength{\textwidth}{16.92cm}
+\setlength{\textheight}{54.6cm}
+\setlength{\oddsidemargin}{-0.50 cm}
+\setlength{\evensidemargin}{-0.50 cm}
+%\setlength{\oddsidemargin}{0 cm}
+\setlength{\topmargin}{-1.5cm}%{-0.8 cm}
+\setlength{\abovedisplayskip}{-2.0cm}
+\setlength{\belowdisplayskip}{-2.0cm}
+
+\setlength{\columnseprule}{0.3pt}
+\usepackage{color}
+%\pagecolor{white}
+\newif\ifopenans
+
+\makeatletter
+%\newcommand{\ansopen}[1]{\@ifundefined{@closeans}{#1}\@else{\phantom{#1}}}
+%\newcommand{\ansopen}[1]{\ifopenans{#1}\else{\phantom{#1}}\fi
+\newcommand{\ansopen}[1]{\ifopenans{#1}\else{\color{white}{#1}}\fi}
+\renewcommand{\baselinestretch}{1.6}
+  
+\title{INFORMS2019 abstract}
+\begin{document}
+%\author{Ê‚Å@óF}
+\date{2019/05/06}
+\maketitle
+ISS2019 title: Optimization Model for Emergency Vehicle Allocation with Integration Dispatch (be used as reference)
+
+1. Optimization Model for Emergency Vehicle Allocation with Consideration of Integration Dispatch
+
+2. Simulation Model for Emergency Vehicle Scheduling
+
+3. Allocation and Dispatch Model for Emergency Vehicle Scheduling
+
+4. Optimization Model for Emergency Vehicle Allocation and Dispatch Problem 
+
+
+ In this research, we consider an optimal allocation and dispatch problem for emergency vehicles (EVs). We propose an optimization model which considers the integration dispatch of EVs in a comparatively large area. We generated some random scenarios to deal with uncertainty in the real world and conducted numerical experiments. However, the obtained results showed that the usefulness of the model is very limited. Therefore, we modified the model to fix the allocation of EVs and the modified model can find the optimal or nearly optimal dispatch under the fixed allocation of EVs robustly. (593 characters)
+\end{document}
