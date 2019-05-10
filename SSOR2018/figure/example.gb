@@ -1,0 +1,7 @@
+set xr[0:40]
+set yr[0:40]
+set xl "x"
+set yl "y"
+set title "Firehouse and Venue's location"
+set output "location.pdf"
+plot 'Fire_house.dat' index 0  w p ps 4.0 pt 13 lt 1 title "Firehouse1", 'Fire_house.dat' index 1 w p ps 4.0 pt 13 lt 2 title "Firehouse2", "Fire_house.dat" index 2 w p ps 4.0 pt 13 lt 3 title "Firehouse5","Fire_house.dat" index 3 w p ps 4.0 pt 13 lt 4 title "Firehouse6",'Fire_house.dat' index 4  w p ps 4.0 pt 13 lt 5 title "Firehouse8", 'Fire_house.dat' index 5 w p ps 4.0 pt 13 lt 8 title "Firehouse9", "Fire_house.dat" index 6 w p ps 4.0 pt 13 lt 9 title "Firehouse10",'venue.dat' index 0  w p ps 2.0 pt 7 lt 1 title "",'venue.dat' index 1  w p ps 2.0 pt 7 lt 2 title "",'venue.dat' index 2  w p ps 2.0 pt 7 lt 3 title "",'venue.dat' index 3  w p ps 2.0 pt 7 lt 4 title "",'venue.dat' index 4  w p ps 2.0 pt 7 lt 5 title "",'venue.dat' index 5  w p ps 2.0 pt 7 lt 8 title "",'venue.dat' index 6  w p ps 2.0 pt 7 lt 9 title ""

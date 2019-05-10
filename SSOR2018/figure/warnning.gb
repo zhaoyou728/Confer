@@ -1,0 +1,17 @@
+
+set xl "Warning time(minute)"
+set title "Warning time's variation"
+#set xtics 60,1,1440 
+set xr[0:1440]
+set yr[0:1]
+#set yl "Warning time(minute)"
+#set border 1
+#set xtics nomirror
+#set ytics nomirror
+#set noytics
+set terminal pdf
+set output "warning_time.pdf"
+
+plot 'warning1.dat' index 0 w p pt 7 ps 0.6 lt 1 title "",'warning1.dat' index 1 w p pt 7 ps 0.6 lt 2 title "",'warning1.dat' index 2 w p pt 7 ps 0.6 lt 3 title "",'warning1.dat' index 3 w p pt 7 ps 0.6 lt 4 title "",'warning1.dat' index 4 w p pt 7 ps 0.6 lt 5 title "",'warning1.dat' index 5 w p pt 7 ps 0.6 lt 7 title "",'warning1.dat' index 6 w p pt 7 ps 0.6 lt 9 title ""
+set terminal windows
+set output

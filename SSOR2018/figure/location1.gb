@@ -1,0 +1,12 @@
+set xr[0:40]
+set yr[0:40]
+set xl "x"
+set yl "y"
+set size ratio 1
+set title "Firehouse and Venue's location"
+set terminal pdf
+set output "location1.pdf"
+plot 'Fire_house1.dat' index 0  w p ps 3.0 pt 13 lt 1 title "", 'Fire_house1.dat' index 1 w p ps 3.0 pt 13 lt 2 title "", "Fire_house1.dat" index 2 w p ps 3.0 pt 13 lt 9 title "","Fire_house1.dat" index 3 w p ps 3.0 pt 13 lt 8 title "",'Fire_house1.dat' index 4  w p ps 3.0 pt 13 lt 3 title "", 'Fire_house1.dat' index 5 w p ps 3.0 pt 13 lt 4 title "", "Fire_house1.dat" index 6 w p ps 3.0 pt 13 lt 5 title "",'Fire_house1.dat' index 7 w p ps 3.0 pt 13 lt 7 title "",'Fire_house1.dat' index 8  w p ps 3.0 pt 13 lt 6 title "",'e2_venue.dat' index 0  w p ps 1.5 pt 7 lt 1 title "",'e2_venue.dat' index 1  w p ps 1.5 pt 7 lt 2 title "",'e2_venue.dat' index 2  w p ps 1.5 pt 7 lt 9 title "",'e2_venue.dat' index 3  w p ps 1.5 pt 7 lt 8 title "",'e2_venue.dat' index 4  w p ps 1.5 pt 7 lt 3 title "",'e2_venue.dat' index 5  w p ps 1.5 pt 7 lt 4 title "",'e2_venue.dat' index 6  w p ps 1.5 pt 7 lt 5 title "",'e2_venue.dat' index 7  w p ps 1.5 pt 7 lt 7 title ""
+
+set terminal windows
+set output

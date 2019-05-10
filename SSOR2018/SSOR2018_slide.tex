@@ -1,0 +1,804 @@
+\documentclass[13pt,dvipdfmx,fleqn]{beamer}
+% pdfの栞の字化けを防ぐ
+% \AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}
+% テーマ
+%\usetheme{AnnArbor}
+\usetheme{Madrid}
+% navi. symbolsは目立たないが，dvipdfmxを使うと機能しないので非表示に
+\setbeamertemplate{navigation symbols}{} 
+\usepackage{relsize,amsmath}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{ascmac}
+\usepackage{comment}
+\usepackage{txfonts}
+\usepackage{color}
+\usepackage{here}
+\usepackage{url}
+\usepackage[labelformat=empty,labelsep=none]{caption}
+%\mathversion{bold}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+\setbeamerfont{title}{size=\large,series=\bfseries}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamertemplate{frametitle}[default][center]
+\usefonttheme{professionalfonts}
+\newcommand{\backupbegin}{
+  \newcounter{framenumberappendix}
+  \setcounter{framenumberappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberappendix}} 
+}
+
+\newcommand{\bd}[1]{\mbox{\boldmath $#1$}}
+\def\smskip{\par\vskip 5pt}
+\def\QED{\hfill $\Box$ \smskip}
+\makeatletter
+
+\newcommand{\figcaption}[1]{\def\@captype{figure}\caption{#1}}
+
+\newcommand{\tblcaption}[1]{\def\@captype{table}\caption{#1}}
+
+\makeatother
+%}
+\title[広域的な出動を考慮した緊急車両配置の最適化]{\LARGE 広域的な出動を考慮した\\緊急車両配置の最適化}
+\author[趙 友（関西大学大学院）檀 寛成（関西大学）]{趙 友（関西大学大学院）\\檀 寛成（関西大学）\bigskip \\オペレーションズ・リサーチ学会 関西支部SSOR2018}
+\date{2018/11/2}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{\LARGE 本研究の背景と目的}
+      % \begin{beamerboxesrounded}
+
+      \textcolor{blue}{\Large[郊外部での消防力に関する課題]}
+      
+        \begin{itemize}
+        \item 郊外部で緊急車両\footnote[1]{消防用自動車,救急用自動車その他の政令で定める自動車で,当該緊急用務のため,政令で定めるところにより,運転中のものをいう}は現場までの平均所要時間が長くなる傾向がある
+ 
+        \item 郊外部で消防署や緊急車両配置不足のため，消防力は都市部より弱い
+
+        \end{itemize}
+       \begin{itembox}[1]
+       {総務省消防庁・平成29年版消防白書}
+   
+          {直ちに広域化を進めることが困難な地域においても必要となる消防力を確保・充実していくため，連携・協力を推進することが必要である}
+        
+       \end{itembox}
+             
+       \begin{itembox}
+         {研究目的}
+    
+          {広域的な出動を考慮した最適な緊急車両配置の算出}   
+
+       \end{itembox}
+
+     
+
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+     {
+       \frametitle{\LARGE 通報発生時の緊急車両の作業流れ図（1/2）}
+       \begin{minipage}{1\hsize}
+         \begin{center}
+           \includegraphics[clip, scale=0.7,width=120mm,height=75mm]{Go1.pdf}
+         \end{center}
+       \end{minipage}
+      
+     
+     }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+     {
+       \frametitle{\LARGE 通報発生時の緊急車両の作業流れ図（2/2）}
+       \begin{minipage}{1\hsize}
+         \begin{center}
+           \includegraphics[clip, scale=0.7,width=120mm,height=80mm]{Go2.pdf}
+         \end{center}
+       \end{minipage}
+      
+     
+     }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+     {
+       \frametitle{\LARGE 数理最適化モデル（1/8）}
+       \begin{description} \large
+       \item [制約条件 1]  \underline{各車両はどの消防署に所属するのかを決める}
+       \item [制約条件 2]  \underline{通報があったときに現場の作業車両要求数を満たす}
+       \item [制約条件 3]  各車両がそれぞれの出動回目で高々一つの現場に存在する
+       \item [制約条件 4]  現場に各車両は高々一回しか出動できない
+       \item [制約条件 5]  \underline{基地から現場までの所要時間}
+       \item [制約条件 6]  \underline{消防署から出発する前の準備時間}
+       \item [制約条件 7]  \underline{現場への到着時刻}
+       \item [制約条件 8]  \underline{現場での作業完了時刻}
+       \item [制約条件 9]  \underline{消防署へ帰着時刻}
+       \end{description}
+     
+     }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+     {
+       \frametitle{\LARGE 数理最適化モデル（2/8）}
+       \begin{description} \large
+       \item [制約条件 10]  次の現場への出発時刻と前の現場から消防署へ帰着時刻の関係
+       \item [制約条件 11]  \underline{現場への到着時刻と通報時刻の差}
+       \item [制約条件 12]  消防署からの出発時刻と現場での作業完了時刻の関係
+       \item [制約条件 13]  現現場への到着時刻と現場での作業完了時刻の関係
+       \item [制約条件 14]  現場での作業完了時刻と消防署へ帰着時刻の関係
+       \item [制約条件 15]  \underline{車両 $k$  の $n-1$ 回の消防署へ帰着時刻と次の}\\ \hspace{1.5mm}\underline{現場通報時刻差}
+       \item [制約条件 16・制約条件 17・制約条件 18]  非負制約
+
+       \end{description}
+     \begin{itembox}
+       {\Large 目的関数} \textcolor{red}{現場への到着時刻と通報時刻の差}の合計と\textcolor{red}{車両 $k$  の $n-1$ 回目の消防署へ帰着時刻と次の現場通報時刻差}の合計が最小になる
+ \end{itembox}
+     }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（3/8）}
+      \begin{itemize}
+      \item {パラメータ} $d_{j}$ : 現場 $j$ の車両要求数
+      \item {変数} $y_{i,k}$ : \ 車両 $k$ が消防署 $i$ に所属するかどうかを表す $0\mathchar`-1$ 変数
+      \item {変数} $x_{j,n,k}$ : \  車両 $k$ が $n$ 回目に現場 $j$ に出動するかどうかを表す $0\mathchar`-1$ 変数
+      \end{itemize}
+      \begin{description}
+      \item [制約条件 1]  各車両はどの消防署に所属するのかを決める
+        \begin{equation}
+          \scalebox{1.3}{$\displaystyle  \displaystyle \sum_{i \in I}y_{i,k}=1 \quad (k \in K)$} \nonumber 
+        \end{equation}
+      \item [制約条件 2] 通報があったときに現場の作業車両要求数を満たす
+        \begin{equation}
+       \scalebox{1.3}{$\displaystyle \displaystyle \sum_{n \in N, k \in K}x_{j,n,k}=d_{j} \quad ( j \in J)$} \nonumber 
+        \end{equation}
+
+      \end{description}
+      
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%d_{j}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（4/8）}
+      \begin{itemize}
+      \item {パラメータ} $t_{i,j}$ : \ 消防署 $i$ から現場 $j$ までの所要時間
+      \item {パラメータ} $M_{1}$ : \ 十分大きな正の定数
+      \item {変数} $\bar{t}_{n,k}$ : \ 車両 $k$ が消防署から $n$ 回目の現場までの所要時間 
+      \end{itemize}
+      \begin{description}
+      \item [制約条件 5] 消防署から現場までの所要時間
+        \Large
+        \begin{eqnarray}
+          \bar{t}_{n,k} \geq t_{i,j}-(1-x_{j,n,k})M_{1}-(1-y_{i,k})M_{1} \nonumber \\
+          (i \in I,\, j \in J, \,n \in N, \,k \in K) \nonumber
+        \end{eqnarray}
+        \normalsize
+       \end{description}
+\begin{figure}[h]
+  \begin{tabular}{ccc}
+      \begin{minipage}{.40\textwidth}
+	\includegraphics[scale=0.5,width=50mm]{cons6.pdf}
+  \end{minipage}
+      \begin{minipage}{.50\textwidth}
+        \begin{center}
+          \begin{tabular}{|c|c|c|}
+            \hline
+            $x_{j,n,k}$ & $y_{i,k}$ & 制約条件5 \\ \hline \hline
+            0 & 0 & $\bar{t}_{n,k} \geq t_{i,j} - M_{1} - M_{1}$\\
+            0 & 1 & $\bar{t}_{n,k} \geq t_{i,j} - M_{1} $ \\
+            1 & 0 & $\bar{t}_{n,k} \geq t_{i,j} - M_{1} $  \\ 
+            1 & 1 & $\bar{t}_{n,k} \geq t_{i,j}$ \\
+            \hline
+          \end{tabular}
+        \end{center}
+      \end{minipage}
+  \end{tabular}
+\end{figure}
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（5/8）}
+      \begin{itemize}
+      
+      \item {パラメータ} $u_{j}$ : \ 現場 $j$ の通報時刻 
+      \item {パラメータ} $e$ : \ 出発前の準備時間
+      \item {変数} $c_{n,k}$ : \ 車両 $k$ の $n$ 回目の出発時刻
+      \end{itemize}
+      \begin{description}
+      \item [制約条件 6] 消防署から出発する前の準備時間
+        \Large
+        \begin{eqnarray}
+               c_{n,k} \geq \displaystyle \sum_{j \in J}x_{j,n,k}u_{j}+e
+          \quad (n \in N,\, k \in K) \nonumber
+        \end{eqnarray}
+        \normalsize
+        \bigskip
+      \end{description}
+      \vspace{-5mm}
+      \begin{minipage}{1\hsize}
+        \begin{center}
+          \includegraphics[clip, scale=0.5,height=40mm,width=70mm]{cons5.pdf}
+        \end{center}
+      \end{minipage}
+      
+
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（6/8）}
+      \begin{itemize}
+      \item {パラメータ} $M_{2}$ : \ 十分大きな正の定数
+      %% \item {変数} $c_{n,k}$ : \ 車両 $k$ の $n$ 回目の出発時刻
+      \item {変数} $v_{n,k}$ : \ 車両 $k$ の $n$ 回目の現場への到着時刻
+      \end{itemize}
+      \begin{description}
+      \item [制約条件 7] 現場への到着時刻
+        \Large
+        \begin{eqnarray} 
+          v_{n,k} \geq c_{n,k}+\bar{t}_{n,k}-(1-x_{j,n,k})M_{2}-(1-y_{i,k})M_{2} \nonumber \\
+          (i \in I,\, j \in J, \,n \in N, \,k \in K) \nonumber
+        \end{eqnarray}
+        \normalsize
+        \bigskip
+      \end{description}
+      \vspace{-5mm}
+      \begin{minipage}{1\hsize}
+        \begin{center}
+          \includegraphics[clip, scale=0.5,height=37mm,width=70mm]{cons7.pdf}
+        \end{center}
+      \end{minipage}
+      
+
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（7/8）}
+      \begin{itemize}
+      \item {パラメータ} $s_{j}$ : \ 現場 $j$ での作業時間
+      \item {変数} $z_{n,k}$ : \ 車両 $k$ の $n$ 回目の作業完了時刻
+      \item {変数} $w_{n,k}$ : \ 車両 $k$ が $n$ 回目の現場から消防署へ帰着時刻
+      \end{itemize}
+      \begin{description}
+      \item [制約条件 8]現場での作業完了時刻
+        \begin{equation} 
+          z_{n,k} = v_{n,k}+\displaystyle \sum_{j \in J}x_{j,n,k}s_{j}
+          \quad (n \in N,\, k \in K) \nonumber
+        \end{equation}
+      \item [制約条件  9] 消防署へ帰着時刻
+        \begin{equation} \
+          w_{n,k} = z_{n,k}+\bar{t}_{n,k} 
+          \quad(n \in N,\,k \in K) \nonumber
+        \end{equation}
+      \end{description}
+      \vspace{-2mm}
+            \begin{minipage}{1\hsize}
+        \begin{center}
+          \includegraphics[clip, scale=0.4,height=35mm,width=70mm]{cons8_cons_9.pdf}
+        \end{center}
+      \end{minipage}
+      
+    }        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{\LARGE 数理最適化モデル（8/8）}
+
+      \begin{description}
+
+      \item [制約条件11] 現場への到着時刻と通報時刻の差
+        \Large
+        \begin{eqnarray}
+       p_{j,n,k} \geq v_{n,k}-u_{j}-(1-x_{j,n,k})M_{2} \nonumber \\ (j \in J,\, n \in N,\, k \in K) \nonumber
+        \end{eqnarray}
+        \normalsize
+      \item [制約条件 15] 車両 $k$ の $n-1$ 回目の消防署へ帰着時刻と次の現場通報時刻の差
+        \Large
+        \begin{eqnarray}
+          q_{j,n,k} \geq w_{n-1,k}-u_{j}-(1-x_{j,n,k})M_{2} \nonumber \\ (j \in J,\, n \in N,\, k \in K,\,n \geq 2) \nonumber
+        \end{eqnarray}
+        \normalsize
+             \end{description}
+     % \vspace{-10mm}
+      \begin{block}{目的関数}
+      \textcolor{red}{現場への到着時刻と通報時刻の差}の合計と\textcolor{red}{車両 $k$  の $n-1$ 回目の消防署へ帰着時刻と次の現場通報時刻差}の合計が最小になる
+        %\vspace{-8mm}
+        \[f = \sum_{j \in J, n \in N, k \in K}p_{j,n,k}+\sum_{j \in J, n \in N, k \in K}q_{j,n,k}\]
+      \end{block}
+      
+    }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{\LARGE 数値実験の概要}
+      \begin{block}{実験1 }
+        総保有緊急車両数12台
+      \end{block}
+      \vspace{-2mm}
+       \begin{block}{実験2 }
+        総保有緊急車両数15台
+       \end{block}
+        \begin{table}[H]
+        \begin{center}
+          \begin{tabular}{ll}
+            \hline
+            消防署数 & 10箇所 \\
+            一日の要請現場数 & 30箇所\\
+            要請現場通報時刻間隔の平均/標準偏差 & 43.48 min/20.35 min\\
+            要請現場車両要求数 & 1台\\
+            出発前の準備時間 & 2 min\\
+            現場での作業時間の平均/標準偏差& 20 min/5 min\\
+            Big-M1/M2 & 1500/50\\
+            Solver & Gurobi Optimizer\\
+            最適化計算時間の設定 & 300s\footnote{300秒を経過してこの時点で得られている最良の暫定解を最適解と解釈することとした}\\
+            \hline
+          \end{tabular}
+          \label{tb:ex1}
+        \end{center}
+      \end{table}
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\frame
+    {
+      \frametitle{\LARGE 数値実験1}
+        $\sum p_{j,n,k} = $ 181.91 min，$\sum q_{j,n,k}= $ 0 min，現場までの平均所要時間は6.06 min
+
+             \begin{figure}
+         \begin{center}
+           \includegraphics[clip, scale=0.2,height=13mm,width=80mm]{warning_time_2.pdf}
+           \label{warning}
+         \end{center}
+             \end{figure}
+             \vspace{-4mm}
+    \begin{figure}[h]
+  \begin{tabular}{cc}
+      \begin{minipage}{.45\textwidth}
+	\includegraphics[clip, scale=0.3,height=62mm]{location1_1.pdf}
+  \end{minipage}
+      \begin{minipage}{.45\textwidth}
+        \begin{center}
+          \begin{tabular}{|c|c|}
+            \hline
+            消防署 & 車両台数    \\ \hline \hline
+            \textcolor{black}{Black} & 2   \\
+            \textcolor{red}{Red} & 3   \\
+            \textcolor{blue}{Blue} & 2   \\ 
+            \textcolor{gray}{Gray} & 1   \\
+            \textcolor{magenta}{Pink} & 1   \\
+            \textcolor{orange}{Orange} & 1   \\
+            \textcolor{cyan}{Water blue } & 1   \\
+            \textcolor{green}{Green} & 1   \\ 
+            \textcolor{yellow}{Yellow} & 0   \\
+            \hline
+          \end{tabular}
+        \end{center}
+      \end{minipage}
+  \end{tabular}
+\end{figure}
+      
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\frame
+    {
+      \frametitle{\LARGE 数値実験2}
+      $\sum p_{j,n,k} = $ 197.23 min，$\sum q_{j,n,k}= $ 0 min，現場までの平均所要時間は6.57 min
+    % { \[ \sum p_{j,n,k} =\] 197.23 min，\[\sum q_{j,n,k} =\] 0 min,現場までの平均所要時間は6.57 min\]} 
+             \begin{figure}
+         \begin{center}
+           \includegraphics[clip, scale=0.2,height=13mm,width=80mm]{warning_time_3.pdf}
+           \label{warning}
+         \end{center}
+             \end{figure}
+             \vspace{-4mm}
+    \begin{figure}[h]
+  \begin{tabular}{cc}
+      \begin{minipage}{.45\textwidth}
+	\includegraphics[clip, scale=0.3,height=62mm]{location1.pdf}
+  \end{minipage}
+      \begin{minipage}{.45\textwidth}
+        \begin{center}
+          \begin{tabular}{|c|c|}
+            \hline
+            消防署 & 車両台数    \\ \hline \hline
+            \textcolor{black}{Black} & 4   \\
+            \textcolor{red}{Red} & 4   \\
+            \textcolor{blue}{Blue} & 3   \\ 
+            \textcolor{gray}{Gray} & 1   \\
+            \textcolor{magenta}{Pink} & 1   \\
+            \textcolor{cyan}{Water blue } & 1   \\
+            \textcolor{green}{Green} & 1   \\ 
+            \textcolor{yellow}{Yellow} & 0   \\
+            \hline
+          \end{tabular}
+        \end{center}
+      \end{minipage}
+  \end{tabular}
+\end{figure}
+      
+    }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\frame
+%    {
+      %\frametitle{\LARGE 数値実験のまとめ}
+      
+     % \begin{itemize}
+    %  \item \Large 緊急車両が広域的な出動をした
+   %   \item \Large 車両台数の増減と・現場までの平均到着所要時間の関係を調べた
+  %    \item \Large 
+
+ %\end{itemize}
+
+%    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame
+    {
+      \frametitle{\LARGE おわりに}
+      
+      \textcolor{blue}{\Large[まとめ]}
+      \begin{itemize}
+      \item \Large 現実問題を最適化問題として定式化した
+      \item \Large サンプルデータを作成し，数値実験を行った
+      \item \Large 広域的な出動を考慮した最適な緊急車両配置を算出
+        
+      \end{itemize}
+      
+      \bigskip
+      \bigskip
+      
+      \textcolor{blue}{\Large[今後の課題]}
+      \begin{itemize}
+      \item \Large 消防署数・総保有緊急車両数などのパラメータを変えて，数値実験を行い，結果を比較 
+      \item \Large 実績データの数値実験を通じて最適化モデル性能の検証
+      \item \Large 現場車両要求数の増加を考慮した緊急車両配置の最適化
+      \end{itemize}
+      
+
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\backupbegin
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{集合・パラメータ・変数(1/2)}
+\textcolor{blue}{[集合]}
+  \begin{itemize}
+  \item $I$ : 基地の集合
+  \item $J$ : 現場の集合
+  \item $K$ : 車両の集合
+  \item $N$ : 出動回数の集合
+  \end{itemize}
+\textcolor{blue}{[パラメータ]}
+      \begin{itemize}
+      \item $u_{j}$ : 現場 $j$ の通報時刻
+      \item $t_{i,j}$ : 消防署 $i$ から現場 $j$ までの所要時間
+      \item $s_{j}$ : 現場 $j$ での作業時間
+      \item $d_{j}$ : 現場 $j$ の車両要求数
+      \item $M_{1}$, $M_{2}$ : 十分大きな正の定数
+      \item $e$ : 車両出発前の準備時間
+      \end{itemize}
+  
+
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame
+    {
+      \frametitle{集合・パラメータ・変数(2/2)}
+\textcolor{blue}{[決定変数]}
+      \begin{itemize}
+      \item $x_{j,n,k}$ : \  車両 $k$ が $n$ 回目に現場 $j$ に出動するかどうかを表す $0\mathchar`-1$ 変数
+      \item $y_{i,k}$ : \ 車両 $k$ が消防署 $i$ に所属するかどうかを表す $0\mathchar`-1$ 変数
+      \item $c_{n,k}$ : \ 車両 $k$ の $n$ 回目の出発時刻
+      \item $\bar{t}_{n,k}$ : 車両 $k$ が消防署から $n$ 回目の現場までの所要時間
+      \item $v_{n,k}$ : \ 車両 $k$ の $n$ 回目の現場への到着時刻
+      \item $w_{n,k}$ : \ 車両 $k$ が $n$ 回目の現場から消防署へ戻る時刻
+      \item $p_{j,n,k}$ : \ 車両 $k$ が $n$ 回目の出動で現場 $j$ へ到着する時刻と通報時刻の差
+      \item $q_{j,n,k}$ : \ 車両 $k$  は $n-1$ 回の消防署へ戻る時刻と次の現場通報時刻差の違反量
+      \end{itemize}
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame
+    {
+      \frametitle{数理最適化モデル（1/5）}
+     
+      \begin{description}
+      \item [制約条件 1] 各車両はどの消防署に所属するのかを決める
+        \begin{equation}
+          \displaystyle \sum_{i \in I}y_{i,k}=1 \quad (k \in K)\label{eq:Position}
+        \end{equation}
+        
+      \item [制約条件 2] 通報があったときに現場の作業車両要求数を満たす
+        \begin{equation}
+          \displaystyle \sum_{n \in N, k \in K}x_{j,n,k}=d_{j} \quad ( j \in J)\label{eq:VehicleDemand}
+        \end{equation}
+
+
+      \item [制約条件 3] 各車両がそれぞれのレイヤで高々一つの現場に存在する
+        \begin{equation}
+          \displaystyle \sum_{j \in J}x_{j,n,k}\leq 1 \quad (n \in N,\, k \in K)\label{eq:LimitVenue}
+        \end{equation}
+
+      \item [制約条件 4] 現場に各車両は高々一回しか出動できない
+        \begin{equation}
+          \displaystyle \sum_{n \in N}x_{j,n,k}\leq 1 \quad (j \in J,\, k \in K)\label{eq:LimitLayer}
+        \end{equation}
+      \end{description}
+
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{数理最適化モデル（2/5）}
+      \begin{description}
+      \item [制約条件 5] 基地から現場までの所要時間
+        \begin{equation}
+          \bar{t}_{n,k} \geq t_{i,j}-(1-x_{j,n,k})M_{1}-(1-y_{i,k})M_{1} \quad (i \in I, \,j \in J,\, n \in N,\, k \in K)\label{eq:NeedTime}
+        \end{equation}
+      \item [制約条件 6] 消防署から出発する前の準備時間
+        \begin{equation}
+          c_{n,k} \geq \displaystyle \sum_{j \in J}x_{j,n,k}u_{j}+e
+          \quad (n \in N,\, k \in K)
+          \label{eq:PrepareTime}
+        \end{equation}
+      \item [制約条件 7] 現場への到着時刻
+        \begin{equation}
+          v_{n,k} \geq c_{n,k}+\bar{t}_{n,k}-(1-x_{j,n,k})M_{2}-(1-y_{i,k})M_{2}
+          \quad (i \in I,\, j \in J, \,n \in N, \,k \in K)\label{eq:ArriveTime}
+        \end{equation}
+      \item [制約条件 8]現場での作業完了時刻
+        \begin{equation}
+          z_{n,k} = v_{n,k}+\displaystyle \sum_{j \in J}x_{j,n,k}s_{j}
+          \quad (n \in N,\, k \in K)\label{eq:OverTime}
+        \end{equation}
+      \end{description}
+  
+      }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{数理最適化モデル（3/5）}
+      \begin{description}
+      \item [制約条件  9] 消防署へ戻る時刻
+        \begin{equation}
+          w_{n,k} = z_{n,k}+\bar{t}_{n,k} 
+          \quad(n \in N,\,k \in K)\label{eq:BackTime}
+        \end{equation}
+      \item [制約条件 10] 次の現場への出発時刻と前の現場から消防署へ戻る時刻の関係
+        \begin{equation}
+          w_{n-1,k}+e \leq c_{n,k}
+          \quad (n \in N,\, k \in K,\, n \geq 2 )\label{eq:BackTimeAndGoTime}
+        \end{equation}
+      \item [制約条件 11] 現場への到着時刻と通報時刻の差
+        \begin{equation}
+          p_{j,n,k} \geq v_{n,k}-u_{j}-(1-x_{j,n,k})M_{2} \quad (j \in J,\, n \in N,\, k \in K)
+          \label{eq:Difference}
+        \end{equation}
+      \item [制約条件 12] 消防署からの出発時刻と現場での作業完了時刻の関係．
+        \begin{equation}
+          v_{n,k} \geq c_{n,k} \quad (n \in N,\, k \in K)
+          \label{eq:ArriveGoTime}
+        \end{equation}
+      \end{description}
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{数理最適化モデル（4/5）}
+      \begin{description}
+        \item [制約条件 13] 現場への到着時刻と現場での作業完了時刻の関係
+  \begin{equation}
+    z_{n,k} \geq v_{n,k} \quad (n \in N,\, k \in K)
+    \label{eq:OverArriveTime}
+  \end{equation}
+
+\item [制約条件 14] 現場での作業完了時刻と消防署へ戻る時刻の関係
+  \begin{equation}
+    w_{n,k} \geq z_{n,k} \quad (n \in N,\, k \in K)
+    \label{eq:BackOverTime}
+  \end{equation}
+\item [制約条件 15] 車両 $k$  は $n-1$ 回の消防署へ戻る時刻と次の現場通報時刻差の違反量
+  \begin{equation}
+    q_{j,n,k} \geq w_{n-1,k}-u_{j}-(1-x_{j,n,k})M_{2} \quad (j \in J,\, n \in N,\, k \in K,\,n \geq 2)
+    \label{eq:Consider12}
+  \end{equation}
+\item [制約条件 16] 非負制約 1 
+  \begin{equation}
+    \bar{t}_{n,k} \geq 0 \quad (n \in N,\, k \in K)
+    \label{eq:Nonnegative3}
+  \end{equation}
+
+\item [制約条件 17] 非負制約 2
+  \begin{equation}
+    v_{n,k} \geq 0 \quad (n \in N,\, k \in K)
+    \label{eq:Nonnegative2}
+  \end{equation}
+ 
+\end{description}
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{数理最適化モデル（5/5）}
+      \begin{description}
+      \item [制約条件 18] 非負制約 3
+        \begin{equation}
+          p_{j,n,k} \geq 0 \quad (j \in J,\,n \in N,\, k \in K)
+          \label{eq:Nonnegative1}
+        \end{equation}
+
+      \end{description}
+      \begin{beamerboxesrounded}{目的関数}
+        各現場の到着時刻と通報時刻の差の合計と式 (\ref{eq:Consider12}) の違反量が最小になる
+        \[f = \sum_{j \in J, n \in N, k \in K}p_{j,n,k}+\sum_{j \in J, n \in N, k \in K}q_{j,n,k}\]
+      \end{beamerboxesrounded}
+    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\frame
+    {
+      \frametitle{数値実験}
+      \begin{table}[H]
+  \begin{center}
+    \caption{表1：計算環境}
+    \begin{tabular}{cc}\hline
+      OS      & Microsoft Windows 10 Home \\
+      CPU     & Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz 2.81GHz \\
+      Memory  & 16.0GB \\
+      Solver  & Gurobi Optimizer \\\hline
+    \end{tabular}
+    \label{計算環境}
+  \end{center}
+      \end{table}
+      \begin{table}[H]
+        \begin{center}
+          \begin{tabular}{c|c|c}
+            \hline
+            $x_{j,n,k}$ & $y_{i,k}$ & 制約条件7 \\ \hline \hline
+            0 & 0 & $ v_{n,k} \geq c_{n,k}+\bar{t}_{n,k} - M_{2} - M_{2}$  \\
+            0 & 1 & $ v_{n,k} \geq c_{n,k}+\bar{t}_{n,k} - M_{2}$ \\
+            1 & 0 & $ v_{n,k} \geq c_{n,k}+\bar{t}_{n,k} - M_{2}$ \\
+            1 & 1 & $ v_{n,k} \geq c_{n,k}+\bar{t}_{n,k} $ \\
+            \hline
+          \end{tabular}
+        \end{center}
+    \end{table}
+
+    }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+ %\frame
+  %  {
+  %    \frametitle{計算機演習問題7  (3/5)}
+
+   %      \begin{figure}[H]
+  %  \begin{tabular}{cc}
+      %---- 最初の図 ---------------------------
+  %    \begin{minipage}[t]{0.45\hsize}
+   %     \centering
+   %     \includegraphics[keepaspectratio, width=55mm]{bis7.eps}
+   %     \caption{所要時間の差}
+   %     \label{}
+   %   \end{minipage} &
+      %---- 2番目の図 --------------------------
+   %   \begin{minipage}[t]{0.45\hsize}
+   %     \centering
+   %     \includegraphics[keepaspectratio, width=55mm]{bis8.eps}
+   %     \caption{所要費用の差}
+   %     \label{}
+   %   \end{minipage}
+      %---- 図はここまで ----------------------
+   % \end{tabular}
+  %\end{figure}
+
+   
+
+  %  }
+
+     
+%\frame
+%    {
+%      \frametitle{計算機演習問題7  (4/5)}
+
+%          \begin{minipage}{1\hsize}
+
+ %          \begin{center}
+ %       \includegraphics[clip, width=110mm]{bis5.eps}
+  %      \hspace{5cm}{図3:T-conormと重心の計算}
+   %       \end{center}
+    %             \end{minipage}
+         
+
+
+   
+
+  %  }
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\frame
+ %   {
+%      \frametitle{先行研究(馬谷，2016年度) (1/2)}
+
+ %     \begin{itemize}
+ %     \item 止水板の最適な設置順序の算出
+%      \begin{itemize}
+%        \item 最適化問題として定式化し，最適化ソルバを用いて解く.
+ %       \end{itemize}%
+ %     \end{itemize}
+
+  %    \footnotesize
+ %     \begin{beamerboxesrounded}
+ %       {最適化問題 : 定式化}
+  %      \begin{description}
+  %        \footnotesize
+   %     \item [目的関数]「流入開始時刻に間に合わなかった出入り口の止水板設置完了\\時刻」と「流入開始時刻」の差の合計を最小にする
+ %       \item [制約条件1]初期状態の設定
+  %      \item [制約条件2]流入する出入口に止水板を設置する
+   %     \item [制約条件3]各設置チームは移動の際に高々1つの出入口に存在することが\\できる
+   %     \item [制約条件4]枝と接点の関係性
+   %     \item [制約条件5]出入口間の移動時間を求める
+   %     \item [制約条件6]各出入口の流入開始時刻を求める
+   %     \item [制約条件7]止水板設置完了時刻を求める
+   %     \end{description}
+   %   \end{beamerboxesrounded}
+      
+
+    %}
+
+    
+
+      
+\backupend    
+\end{document}
+
+%%%% End of file %
+

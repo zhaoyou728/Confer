@@ -1,0 +1,12 @@
+set xl "Warning venue"
+set yl "Warning time"
+set title "Warning time's variation"
+set yr[0:1440]
+set xr[0:30]
+set terminal pdf
+set output "warning_time.pdf"
+
+plot 'warnning.dat'title " Warning time's linespoints"  with linespoints lw 7 lt 4
+
+set terminal windows
+set output
